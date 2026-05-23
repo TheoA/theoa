@@ -566,14 +566,14 @@ __        _   _   | |     _____  _   _    ___    ___      __      __       _    
 
                     <div class="list-item" style="border-bottom: none;">
                         <div class="list-item-details">
-                            <span class="white-highlight">[X] DECLARE CHAPTER 11 BANKRUPTCY</span>
+                            <span class="white-highlight">[X] EXECUTE SEARS/CARVEOUT CHAPTER 11 LOOPHOLE</span>
                             <div style="font-size: 11px; color: rgba(57, 255, 20, 0.85); margin-top: 2px;">
-                                Wipe out equity, vaporize workers' pensions, default on creditors.
-                                <br><span style="color: #ff3333;">Result: Delete company from portfolio. Keep all prior stripped cash. Heat +35%!</span>
+                                Walk away from company debt completely. Wipe out public creditors, cancel pension obligations, and keep all stripped loot.
+                                <br><span style="color: #ff3333; font-weight: bold;">Result: Delete company from portfolio. Keep prior stripped cash. Heat +40%! (Warning: High Heat can trigger an immediate federal audit or union backlash).</span>
                             </div>
                         </div>
                         <div class="list-item-action">
-                            <button id="btn-modal-bankrupt" onclick="performBankrupt()">BANKRUPT</button>
+                            <button id="btn-modal-bankrupt" onclick="performBankrupt()">LOOPHOLE</button>
                         </div>
                     </div>
                 </div>
@@ -1269,18 +1269,22 @@ __        _   _   | |     _____  _   _    ___    ___      __      __       _    
             const c = game.companies.find(comp => comp.id === companyId);
             if (!c) return;
 
-            if (game.cash < c.valuation) {
-                showSimpleEventAlert("INSUFFICIENT CAPITAL", `You need ${formatMoney(c.valuation)} cash to buy ${c.name}, but you only have ${formatMoney(game.cash)}. Press [B] to draw high-interest shadow leverage, or strip/flip other companies to generate liquidity!`);
+            const equityVal = Math.max(0, c.valuation - c.debt);
+            const fee = Math.round(equityVal * 0.10);
+            const totalCost = equityVal + fee;
+
+            if (game.cash < totalCost) {
+                showSimpleEventAlert("INSUFFICIENT CAPITAL", `You need ${formatMoney(totalCost)} cash (Equity: ${formatMoney(equityVal)} + 10% Goldman Sucks Fee: ${formatMoney(fee)}) to buy ${c.name}, but you only have ${formatMoney(game.cash)}. Press [B] to draw high-interest shadow leverage, or strip/flip other companies to generate liquidity!`);
                 return;
             }
 
-            game.cash -= c.valuation;
+            game.cash -= totalCost;
             c.isOwned = true;
             
             // Remove from available local acquisitions
             game.availableAcquisitions = game.availableAcquisitions.filter(comp => comp.id !== companyId);
 
-            addLog(`ACQUIRED: Purchased ${c.name} for ${formatMoney(c.valuation)} personal cash. Loaded ${formatMoney(c.debt)} existing company debt into your structural liabilities.`, 'buy');
+            addLog(`ACQUIRED: Purchased ${c.name} for ${formatMoney(totalCost)} personal cash (Equity Val: ${formatMoney(equityVal)}, Goldman Fee: ${formatMoney(fee)}). Loaded ${formatMoney(c.debt)} existing company debt onto its balance sheet.`, 'buy');
             playBeep('success');
             updateUI();
         }
@@ -1401,13 +1405,17 @@ __        _   _   | |     _____  _   _    ___    ___      __      __       _    
                     const item = document.createElement('div');
                     item.className = 'list-item';
                     
-                    const buyDisabled = game.cash < c.valuation ? 'disabled' : '';
+                    const equityVal = Math.max(0, c.valuation - c.debt);
+                    const fee = Math.round(equityVal * 0.10);
+                    const acqCost = equityVal + fee;
+                    const buyDisabled = game.cash < acqCost ? 'disabled' : '';
 
                     item.innerHTML = `
                         <div class="list-item-details">
                             <span style="font-weight: bold; font-size:15px; color:#fff;">${c.name}</span> <span style="font-size:10px; color:rgba(57,255,20,0.6)">(${c.original})</span>
                             <div class="company-stats">
-                                Acquisition Cost: <span class="white-highlight" style="text-decoration: underline;">${formatMoney(c.valuation)}</span>
+                                Acquisition Cost (Equity + 10% IB Fee): <span class="white-highlight" style="text-decoration: underline;">${formatMoney(acqCost)}</span>
+                                <br>Enterprise Value: ${formatMoney(c.valuation)} | Existing Debt: ${formatMoney(c.debt)}
                                 <br>Operating Yield: <span style="color: ${c.profit < 0 ? '#ff3333' : '#33ff33'}">${c.profit < 0 ? '' : '+'}${formatMoney(c.profit)}/turn</span>
                                 <br>Strippable Assets: ${formatMoney(c.assets)} | Initial Viability: ${c.viability}%
                             </div>
@@ -1574,11 +1582,14 @@ __        _   _   | |     _____  _   _    ___    ___      __      __       _    
                 return;
             }
 
-            game.cash += equityVal;
+            const fee = Math.round(equityVal * 0.10);
+            const netPayout = equityVal - fee;
+
+            game.cash += netPayout;
             c.isOwned = false;
             c.isSold = true;
 
-            addLog(`FLIP: Sold your equity stake in ${c.name} back to public retail investors for ${formatMoney(equityVal)} net personal cash. Good luck to their mutual funds!`, 'success');
+            addLog(`FLIP: Sold your equity stake in ${c.name} back to public retail investors for ${formatMoney(netPayout)} net personal cash (Equity Val: ${formatMoney(equityVal)}, Goldman Sucks Transaction Fee: ${formatMoney(fee)}). Good luck to their mutual funds!`, 'success');
             playBeep('success');
             
             closeCompanyModal();
@@ -1595,15 +1606,27 @@ __        _   _   | |     _____  _   _    ___    ___      __      __       _    
             c.isBankrupt = true;
 
             // Outrage
-            const heatGain = 35;
+            const heatGain = 40;
             const finalHeatGain = game.upgrades.bribedSenator ? Math.round(heatGain * 0.5) : heatGain;
             game.heat = Math.min(100, game.heat + finalHeatGain);
 
-            addLog(`CHAPTER 11: Placed ${c.name} into bankruptcy liquidation. Wiped out public creditors, cancelled remaining labor contracts, and walked away with your prior stripped dividends. Heat +${finalHeatGain}%!`, 'bankrupt');
+            addLog(`CHAPTER 11: Executed Sears/Carveout on ${c.name}. Vaporized creditors, walked away with stripped funds. Heat +${finalHeatGain}%!`, 'bankrupt');
             playBeep('alert');
             
             closeCompanyModal();
             updateUI();
+
+            // High Heat immediate risk check
+            if (game.heat > 75) {
+                const immediateThreat = Math.random() < 0.50;
+                if (immediateThreat) {
+                    addLog(`RISK THRESHOLD CRITICAL: High heat has provoked an immediate federal investigation or worker protest!`, 'bad-event');
+                    setTimeout(() => {
+                        triggerRandomBadEvent();
+                        updateUI();
+                    }, 800);
+                }
+            }
         }
 
         // MODAL EVENT POPUP UTILITY
