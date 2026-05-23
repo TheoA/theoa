@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VULTURE TERMINAL 1000</title>
+    <style>
+        /* Retro Terminal CRT Aesthetic Styling */
+        :root {
+            --term-green: #39ff14;
+            --term-green-glow: rgba(57, 255, 20, 0.45);
+            --term-green-dark: #003300;
+            --bg-color: #050505;
+            --font-stack: "Courier New", Courier, Monaco, monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--term-green);
+            font-family: var(--font-stack);
+            font-size: 14px;
+            line-height: 1.4;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+            text-shadow: 0 0 2px var(--term-green-glow);
+        }
+
+        /* Scanline Overlay Effect */
+        body::after {
+            content: " ";
+            display: none; /* temporarily disabled */
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
+            background-size: 100% 4px, 6px 100%;
+            z-index: 99999;
+            pointer-events: none;
+        }
+
+        /* Retro Phosphor Screen Flicker */
+        @keyframes crt-flicker {
+            0% { opacity: 0.995; }
+            50% { opacity: 1; }
+            100% { opacity: 0.995; }
+        }
+
+        .crt-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            border: 2px solid var(--term-green);
+            padding: 15px;
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
+            background: #080808;
+            animation: crt-flicker 0.15s infinite;
+        }
+
+        header {
+            border-bottom: 2px double var(--term-green);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .ascii-logo {
+            font-size: 8px;
+            line-height: 1.1;
+            white-space: pre;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+            overflow-x: auto;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            font-weight: bold;
+            padding: 5px 0;
+        }
+
+        .heat-bar-container {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .heat-bar {
+            border: 1px solid var(--term-green);
+            width: 150px;
+            height: 14px;
+            margin-left: 10px;
+            position: relative;
+            background: var(--term-green-dark);
+        }
+
+        .heat-bar-fill {
+            height: 100%;
+            background-color: var(--term-green);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        @media(min-width: 800px) {
+            .dashboard {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .panel {
+            border: 1px solid var(--term-green);
+            padding: 12px;
+            position: relative;
+            background-color: rgba(0, 5, 0, 0.6);
+        }
+
+        .panel-title {
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background-color: #080808;
+            padding: 0 8px;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .panel-content {
+            margin-top: 5px;
+            min-height: 150px;
+        }
+
+        /* Interactive list items */
+        .list-item {
+            border-bottom: 1px dotted var(--term-green);
+            padding: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .list-item-details {
+            flex: 1;
+        }
+
+        .company-name {
+            font-weight: bold;
+            font-size: 15px;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .company-name:hover {
+            color: #000;
+            background-color: var(--term-green);
+        }
+
+        .company-stats {
+            font-size: 12px;
+            color: rgba(57, 255, 20, 0.85);
+            margin-top: 3px;
+        }
+
+        .list-item-action {
+            margin-left: 15px;
+        }
+
+        /* Buttons & Controls */
+        button, .btn {
+            background: transparent;
+            border: 1px solid var(--term-green);
+            color: var(--term-green);
+            font-family: var(--font-stack);
+            font-size: 13px;
+            padding: 5px 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            outline: none;
+            transition: all 0.1s ease;
+        }
+
+        button:hover, .btn:hover {
+            background-color: var(--term-green);
+            color: var(--bg-color);
+            text-shadow: none;
+            box-shadow: 0 0 5px var(--term-green);
+        }
+
+        button:disabled, .btn:disabled {
+            border-color: var(--term-green-dark);
+            color: var(--term-green-dark);
+            cursor: not-allowed;
+            text-shadow: none;
+        }
+
+        button:disabled:hover {
+            background-color: transparent;
+            color: var(--term-green-dark);
+            box-shadow: none;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .travel-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .finance-panel {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        @media(min-width: 800px) {
+            .finance-panel {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Log Panel styling */
+        .log-panel {
+            margin-top: 15px;
+            border: 1px solid var(--term-green);
+            background-color: #000;
+        }
+
+        .log-container {
+            height: 140px;
+            overflow-y: auto;
+            padding: 8px 12px;
+            font-size: 13px;
+            scroll-behavior: smooth;
+        }
+
+        .log-line {
+            margin-bottom: 4px;
+            font-family: var(--font-stack);
+        }
+
+        .log-line.system { color: #fff; }
+        .log-line.buy { color: #00ffcc; }
+        .log-line.strip { color: #ff33ff; }
+        .log-line.recap { color: #ffff33; }
+        .log-line.cut { color: #ff6600; }
+        .log-line.bankrupt { color: #ff3333; }
+        .log-line.success { color: #33ff33; }
+        .log-line.bad-event { color: #ff3333; font-weight: bold; }
+        .log-line.upgrade { color: #33ffff; font-weight: bold; }
+
+        /* Dialog/Modal Overlays */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s, visibility 0.2s;
+        }
+
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-box {
+            background-color: #030303;
+            border: 2px solid var(--term-green);
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+            position: relative;
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: bold;
+            border-bottom: 1px solid var(--term-green);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+            font-size: 13.5px;
+        }
+
+        .modal-action-box {
+            border: 1px dotted var(--term-green);
+            padding: 10px;
+            margin-top: 15px;
+            background-color: var(--term-green-dark);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Sound Control Switch */
+        .sound-toggle {
+            float: right;
+            font-size: 12px;
+            border: 1px solid var(--term-green);
+            padding: 1px 5px;
+            cursor: pointer;
+            margin-top: -3px;
+        }
+        .sound-toggle:hover {
+            background-color: var(--term-green);
+            color: var(--bg-color);
+        }
+
+        /* Flash Indicator */
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background-color: var(--term-green);
+            animation: cursor-blink 1s infinite;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+
+        @keyframes cursor-blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        .green-highlight { color: #fff; background-color: var(--term-green-dark); padding: 0 3px; }
+        .red-highlight { color: #ff3333; font-weight: bold; }
+        .white-highlight { color: #fff; font-weight: bold; }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .stat-label {
+            color: rgba(57, 255, 20, 0.75);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="crt-container">
+        <!-- HEADER PANEL -->
+        <header>
+            <div class="sound-toggle" id="sound-toggle" onclick="toggleSound()">[SOUND: ON]</div>
+            <div class="ascii-logo">
+__        _   _   | |     _____  _   _    ___    ___      __      __       _       ___         ___        
+\ \    / /| | | | | |    |_   _|| | | |  | _ \  | __|     \ \    / /      /_\     | _ \       / __|       
+ \ \  / / | |_| | | |___   | |  | |_| |  |   /  | _|       \ \/\/ /      / _ \    |   /       \__ \       
+  \_\/_/   \___/  |_____|  |_|   \___/   |_|_\  |___|       \_/\_/      /_/ \_\   |_|_\       |___/       
+            </div>
+            
+            <div class="status-bar">
+                <div>SYSTEM: <span class="white-highlight">VULTURE TERMINAL 1000</span></div>
+                <div>TURN: <span id="turn-display" class="white-highlight">01/30</span></div>
+                <div class="heat-bar-container">
+                    <span>HEAT:</span>
+                    <div class="heat-bar" title="Public and regulatory anger. Higher heat triggers worse events.">
+                        <div class="heat-bar-fill" id="heat-fill" style="width: 20%;"></div>
+                    </div>
+                    <span id="heat-text" style="margin-left: 8px;">20%</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- PLAYER BALANCES -->
+        <div style="border: 1px solid var(--term-green); padding: 10px; margin-bottom: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; background-color: rgba(0, 15, 0, 0.4);">
+            <div>CASH: <span id="cash-display" class="white-highlight" style="font-size: 16px;">$10,000,000</span></div>
+            <div>PERSONAL DEBT: <span id="debt-display" class="red-highlight" style="font-size: 16px;">$2,000,000</span></div>
+            <div>NET WORTH: <span id="net-worth-display" class="white-highlight" style="font-size: 16px; color: #fff; text-shadow: 0 0 5px #fff;">$8,000,000</span></div>
+            <div>LOCATION: <span id="location-display" class="white-highlight">Cayman Islands</span></div>
+        </div>
+
+        <!-- MAIN DASHBOARD -->
+        <div class="dashboard">
+            <!-- PORTFOLIO PANEL -->
+            <div class="panel">
+                <div class="panel-title">[ PORTFOLIO OF OWNED COMPANIES ]</div>
+                <div class="panel-content" id="portfolio-list">
+                    <!-- Dynamic -->
+                </div>
+            </div>
+
+            <!-- ACQUISITIONS PANEL -->
+            <div class="panel">
+                <div class="panel-title">[ AVAILABLE TARGET ACQUISITIONS ]</div>
+                <div class="panel-content" id="acquisitions-list">
+                    <!-- Dynamic -->
+                </div>
+            </div>
+        </div>
+
+        <!-- LOWER FINANCE & TRAVEL CONTROLS -->
+        <div class="finance-panel">
+            <!-- PERSONAL FINANCE ACTIONS -->
+            <div class="panel">
+                <div class="panel-title">[ PERSONAL FINANCE & LBO LEVERAGE ]</div>
+                <div class="panel-content" style="min-height: auto;">
+                    <p style="font-size: 12px; margin-bottom: 8px; color: rgba(57, 255, 20, 0.85);">
+                        Need liquidity to acquire larger targets? Draw cash from shadow debt markets, or repay your leverage to dodge high turn-based compound interest.
+                    </p>
+                    <div style="font-size: 13px; margin-bottom: 10px;">
+                        Current Personal Borrowing Rate: <span id="interest-rate-text" class="red-highlight">10.0% / turn</span>
+                        <br>
+                        Max Personal Credit Limit: <span id="credit-limit-text">$10.0M</span>
+                    </div>
+                    <div class="button-group">
+                        <button id="btn-borrow" onclick="borrowCash()">[B] Borrow $1.0M Cash</button>
+                        <button id="btn-repay" onclick="repayDebt()">[P] Repay $1.0M Debt</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TRAVEL / TURN ADVANCE -->
+            <div class="panel">
+                <div class="panel-title">[ TRAVEL & MARKET ARBITRAGE ]</div>
+                <div class="panel-content" style="min-height: auto;">
+                    <p style="font-size: 12px; margin-bottom: 8px; color: rgba(57, 255, 20, 0.85);">
+                        Traveling advances the <span class="white-highlight">Turn Counter</span>, accrues compound interest, triggers corporate operations cash flow, and refreshes local acquisitions and market valuations.
+                    </p>
+                    <div class="travel-group" id="travel-buttons">
+                        <!-- Dynamic buttons -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTIVE UPGRADES STATUS -->
+        <div class="panel" style="margin-bottom: 15px;">
+            <div class="panel-title">[ COMPROMISED ASSETS & REGULATORY SHIELDS ]</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 15px; font-size: 12px; padding-top: 5px;" id="upgrades-status">
+                <!-- Dynamic status checks -->
+            </div>
+        </div>
+
+        <!-- TERMINAL LOG PANEL -->
+        <div class="log-panel">
+            <div style="background-color: var(--term-green-dark); color: var(--term-green); font-size: 11px; font-weight: bold; padding: 3px 12px; border-bottom: 1px solid var(--term-green);">
+                ======================[ ACTIVE SYSTEM ENGINE LOG ]======================
+            </div>
+            <div class="log-container" id="log-container">
+                <!-- Dynamic Log Lines -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL OVERLAYS -->
+    
+    <!-- 1. COMPANY ACTIONS MODAL -->
+    <div class="modal-overlay" id="company-modal">
+        <div class="modal-box">
+            <div class="modal-header" id="modal-company-title">COMPANY_NAME</div>
+            <div class="modal-body">
+                <p id="modal-company-desc" style="font-style: italic; margin-bottom: 12px; font-size: 12px; color: rgba(57, 255, 20, 0.8);"></p>
+                
+                <div class="stat-grid">
+                    <div class="stat-label">STATUS:</div>
+                    <div id="modal-company-status" class="white-highlight">Operating</div>
+                    
+                    <div class="stat-label">VIABILITY:</div>
+                    <div id="modal-company-viability">85%</div>
+                    
+                    <div class="stat-label">VALUATION:</div>
+                    <div id="modal-company-valuation" class="white-highlight">$6,200,000</div>
+                    
+                    <div class="stat-label">PHYSICAL ASSETS:</div>
+                    <div id="modal-company-assets">$4,500,000</div>
+                    
+                    <div class="stat-label">COMPANY DEBT:</div>
+                    <div id="modal-company-debt" class="red-highlight">$1,000,000</div>
+                    
+                    <div class="stat-label">OPERATING FLOW:</div>
+                    <div id="modal-company-profit">-$150,000/mo</div>
+                </div>
+
+                <div class="modal-action-box">
+                    <div style="font-weight: bold; text-decoration: underline; margin-bottom: 8px;">CHOOSE FINANCIAL ACTION:</div>
+                    
+                    <div class="list-item" style="border-bottom: 1px dotted rgba(57,255,20,0.5);">
+                        <div class="list-item-details">
+                            <span class="white-highlight">[S] ASSET STRIP (SELL-AND-LEASEBACK)</span>
+                            <div style="font-size: 11px; color: rgba(57, 255, 20, 0.85); margin-top: 2px;">
+                                Sell off physical real estate to your personal holding company.
+                                <br><span style="color: #ff33ff;">Result: Receive 50% of Book Assets instantly. Viability -25%, Profit -150k/mo (due to rent).</span>
+                            </div>
+                        </div>
+                        <div class="list-item-action">
+                            <button id="btn-modal-strip" onclick="performStrip()">STRIP</button>
+                        </div>
+                    </div>
+
+                    <div class="list-item" style="border-bottom: 1px dotted rgba(57,255,20,0.5);">
+                        <div class="list-item-details">
+                            <span class="white-highlight">[D] LEVERAGED DIVIDEND RECAP</span>
+                            <div style="font-size: 11px; color: rgba(57, 255, 20, 0.85); margin-top: 2px;">
+                                Force the company to issue high-yield bonds to pay you a dividend.
+                                <br><span style="color: #ffff33;">Result: Take cash equal to 50% of Valuation. Company Debt increases by same amount. Profit drops (debt servicing), Viability -15%.</span>
+                            </div>
+                        </div>
+                        <div class="list-item-action">
+                            <button id="btn-modal-recap" onclick="performRecap()">RECAP</button>
+                        </div>
+                    </div>
+
+                    <div class="list-item" style="border-bottom: 1px dotted rgba(57,255,20,0.5);">
+                        <div class="list-item-details">
+                            <span class="white-highlight">[C] "SYNERGY OPTIMIZATION" (COST CUTTING)</span>
+                            <div style="font-size: 11px; color: rgba(57, 255, 20, 0.85); margin-top: 2px;">
+                                Lay off 30% of employees, slash benefits, lower quality standards.
+                                <br><span style="color: #ff6600;">Result: Increases operating cash flow by +$150k/mo. Viability -10%, Heat +15% (worker backlash).</span>
+                            </div>
+                        </div>
+                        <div class="list-item-action">
+                            <button id="btn-modal-cut" onclick="performCut()">OPTIMIZE</button>
+                        </div>
+                    </div>
+
+                    <div class="list-item" style="border-bottom: 1px dotted rgba(57,255,20,0.5);">
+                        <div class="list-item-details">
+                            <span class="white-highlight">[F] FLIP COMPANY (SELL TO MARKET)</span>
+                            <div style="font-size: 11px; color: rgba(57, 255, 20, 0.85); margin-top: 2px;">
+                                Unload company onto public markets, pension funds, or a dumber buyer.
+                                <br><span style="color: #33ff33;">Result: Collect (Valuation - Company Debt) as Personal Cash. Removes company from portfolio.</span>
+                            </div>
+                        </div>
+                        <div class="list-item-action">
+                            <button id="btn-modal-flip" onclick="performFlip()">FLIP</button>
+                        </div>
+                    </div>
+
+                    <div class="list-item" style="border-bottom: none;">
+                        <div class="list-item-details">
+                            <span class="white-highlight">[X] DECLARE CHAPTER 11 BANKRUPTCY</span>
+                            <div style="font-size: 11px; color: rgba(57, 255, 20, 0.85); margin-top: 2px;">
+                                Wipe out equity, vaporize workers' pensions, default on creditors.
+                                <br><span style="color: #ff3333;">Result: Delete company from portfolio. Keep all prior stripped cash. Heat +35%!</span>
+                            </div>
+                        </div>
+                        <div class="list-item-action">
+                            <button id="btn-modal-bankrupt" onclick="performBankrupt()">BANKRUPT</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button onclick="closeCompanyModal()">[E] Close Modal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. INTERSTITIAL EVENT / OPPORTUNITY MODAL -->
+    <div class="modal-overlay" id="event-modal">
+        <div class="modal-box" id="event-modal-box">
+            <div class="modal-header" id="event-title">EVENT ALERT</div>
+            <div class="modal-body" id="event-body">
+                Event text goes here.
+            </div>
+            <div class="modal-actions" id="event-actions">
+                <!-- Dynamic buttons -->
+            </div>
+        </div>
+    </div>
+
+    <!-- AUDIO NOTIFICATION DRIVER -->
+    <script>
+        // Web Audio API Retro Synth Engine
+        let audioCtx = null;
+        let soundEnabled = true;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function toggleSound() {
+            initAudio();
+            soundEnabled = !soundEnabled;
+            const toggleBtn = document.getElementById('sound-toggle');
+            if (soundEnabled) {
+                toggleBtn.innerText = '[SOUND: ON]';
+                playBeep('success');
+            } else {
+                toggleBtn.innerText = '[SOUND: OFF]';
+            }
+        }
+
+        function playBeep(type) {
+            if (!soundEnabled) return;
+            initAudio();
+            if (!audioCtx) return;
+
+            try {
+                // Resume context if suspended (browser security policy)
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.05);
+                } else if (type === 'travel') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(320, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.18);
+                    gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.18);
+                } else if (type === 'success') {
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.08); // E5
+                    osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.16); // G5
+                    gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                } else if (type === 'alert') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(100, audioCtx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.25);
+                } else if (type === 'gameover') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(280, audioCtx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(40, audioCtx.currentTime + 0.8);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.8);
+                }
+            } catch (e) {
+                console.warn("Web Audio API blocked or not supported:", e);
+            }
+        }
+    </script>
+
+    <!-- CORE GAME GAMEPLAY LOGIC ENGINE -->
+    <script>
+        // Pre-generated/designed catalog of parody corporate targets
+        const staticCompanies = [
+            {
+                id: 'searsly',
+                name: 'Searsly',
+                original: 'Sears',
+                sector: 'Retail',
+                description: 'Once-mighty department store giant. Its massive brick-and-mortar real estate portfolio is ripe for stripping.',
+                baseValuation: 5000000,
+                assets: 4000000,
+                debt: 1000000,
+                profit: -150000,
+                viability: 85
+            },
+            {
+                id: 'redlobotomy',
+                name: 'Red Lobotomy',
+                original: 'Red Lobster',
+                sector: 'Food Service',
+                description: 'Endless shrimp promotions have bled this chain dry. Its land leaseholds are highly salvageable.',
+                baseValuation: 3500000,
+                assets: 3000000,
+                debt: 2000000,
+                profit: -100000,
+                viability: 60
+            },
+            {
+                id: 'toyzrusnt',
+                name: "Toyz-R-Us'nt",
+                original: 'Toys "R" Us',
+                sector: 'Retail',
+                description: "Beloved children's toy retailer loaded with heavy debt liabilities from its last LBO transaction.",
+                baseValuation: 4500000,
+                assets: 3500000,
+                debt: 3000000,
+                profit: -120000,
+                viability: 70
+            },
+            {
+                id: 'blockbusterd',
+                name: "BlockBuster'd",
+                original: 'Blockbuster',
+                sector: 'Media',
+                description: 'Video rental chain struggling with the internet. Excellent prime commercial real estate holdings.',
+                baseValuation: 2000000,
+                assets: 1800000,
+                debt: 500000,
+                profit: -80000,
+                viability: 50
+            },
+            {
+                id: 'bedbathbeyondhelp',
+                name: 'Bed Bath & Beyond Help',
+                original: 'Bed Bath & Beyond',
+                sector: 'Retail',
+                description: 'Drowning in unsold inventory, coupon liabilities, and expensive lease agreements.',
+                baseValuation: 6000000,
+                assets: 4500000,
+                debt: 4000000,
+                profit: -250000,
+                viability: 45
+            },
+            {
+                id: 'radioshackled',
+                name: 'RadioShackled',
+                original: 'RadioShack',
+                sector: 'Electronics',
+                description: 'Survival is a mystery, but their classic legacy brand name still holds salvageable value.',
+                baseValuation: 1200000,
+                assets: 800000,
+                debt: 300000,
+                profit: -50000,
+                viability: 40
+            },
+            {
+                id: 'weworkless',
+                name: 'WeWorkless',
+                original: 'WeWork',
+                sector: 'Real Estate',
+                description: 'Co-working tech bubble. Tremendous long-term lease liabilities, but prime office space.',
+                baseValuation: 12000000,
+                assets: 8000000,
+                debt: 9000000,
+                profit: -800000,
+                viability: 35
+            },
+            {
+                id: 'hertzsobad',
+                name: 'Hertz-So-Bad',
+                original: 'Hertz',
+                sector: 'Automotive',
+                description: 'Car rental fleet can be liquidated rapidly for a quick cash infusion.',
+                baseValuation: 8000000,
+                assets: 7000000,
+                debt: 5000000,
+                profit: -180000,
+                viability: 75
+            },
+            {
+                id: 'tupperweardown',
+                name: 'TupperWearDown',
+                original: 'Tupperware',
+                sector: 'Consumer Goods',
+                description: 'Plastic storage MLM whose patents expired. The factories and brand name still hold value.',
+                baseValuation: 2500000,
+                assets: 1500000,
+                debt: 800000,
+                profit: -60000,
+                viability: 55
+            },
+            {
+                id: 'yellowcorpse',
+                name: 'Yellow Corpse',
+                original: 'Yellow Corp',
+                sector: 'Logistics',
+                description: 'Failing trucking empire with high union costs but incredibly valuable regional freight hubs.',
+                baseValuation: 9000000,
+                assets: 8500000,
+                debt: 6000000,
+                profit: -350000,
+                viability: 50
+            },
+            {
+                id: 'jcpenny-less',
+                name: 'JC Penny-less',
+                original: 'JCPenney',
+                sector: 'Retail',
+                description: 'Mid-tier department store. Great for real estate carveouts and lease restructuring.',
+                baseValuation: 4000000,
+                assets: 3200000,
+                debt: 1800000,
+                profit: -130000,
+                viability: 65
+            },
+            {
+                id: 'ftxpired',
+                name: 'FTX-pired',
+                original: 'FTX',
+                sector: 'Finance',
+                description: 'Assets are mostly digital beans and dust, but bankruptcy claims hold massive frozen cash reserves.',
+                baseValuation: 15000000,
+                assets: 5000000,
+                debt: 12000000,
+                profit: -1200000,
+                viability: 20
+            },
+            {
+                id: 'siligonevalleybank',
+                name: 'Sili-Gone Valley Bank',
+                original: 'Silicon Valley Bank',
+                sector: 'Finance',
+                description: 'Tech startup lender that suffered a massive run. Backstopped by the federal government.',
+                baseValuation: 14000000,
+                assets: 12000000,
+                debt: 10000000,
+                profit: -500000,
+                viability: 30
+            },
+            {
+                id: 'theranosedive',
+                name: 'Theranose-dive',
+                original: 'Theranos',
+                sector: 'Biotech',
+                description: 'Fictional blood testing technology, but sitting on $12M of remaining venture capital.',
+                baseValuation: 10000000,
+                assets: 4000000,
+                debt: 2000000,
+                profit: -900000,
+                viability: 25
+            },
+            {
+                id: 'enronic',
+                name: 'Enron-ic',
+                original: 'Enron',
+                sector: 'Energy',
+                description: 'An elaborate accounting illusion. Great for creative book-cooking, but highly toxic.',
+                baseValuation: 16000000,
+                assets: 6000000,
+                debt: 14000000,
+                profit: -1500000,
+                viability: 15
+            }
+        ];
+
+        // Travel Locations
+        const locations = [
+            { name: 'Cayman Islands', desc: 'Low tax, low regulation. Heat builds 50% slower here.', multiplier: 0.8 },
+            { name: 'Wall Street (NYC)', desc: 'Financial nerve center. Valuations inflated. Heat builds 50% faster.', multiplier: 1.1 },
+            { name: 'Silicon Valley', desc: 'Venture bubble. Valuations fluctuate wildly (-50% to +100%).', multiplier: 1.3 },
+            { name: 'Delaware', desc: 'Strong legal shield. Reduces lawsuit/SEC events by 75%.', multiplier: 1.0 },
+            { name: 'London City', desc: 'Stable old money. Consistent interest rates and valuations.', multiplier: 1.05 }
+        ];
+
+        // Game State Variables
+        const game = {
+            cash: 10000000,
+            debt: 2000000,
+            heat: 20,
+            location: 'Cayman Islands',
+            turn: 1,
+            maxTurns: 30,
+            upgrades: {
+                bribedSenator: false,
+                ownsNewspaper: false,
+                hasMercSec: false,
+                hasShellCorp: false,
+                hasJusticeFriend: false
+            },
+            companies: [], // deep copied active targets
+            availableAcquisitions: [], // targets currently buyable in local hub
+            selectedCompany: null, // target for the active company actions view
+            marketCrashTurns: 0,
+            creditFreezeTurns: 0,
+            strikeTurns: {} // map of companyIds to strike turns remaining
+        };
+
+        // Static List of Potential Random Event Opportunities
+        const upgradeItems = [
+            {
+                id: 'bribedSenator',
+                name: 'Bribe a Senator',
+                cost: 1500000,
+                desc: 'Bribe a key member of the Senate Banking Committee. All future Heat gains are halved permanently.',
+                triggerText: 'An sleazy, well-dressed lobbyist sidles up to you in a luxury cigar lounge. He says a certain influential Senator is willing to look the other way on leveraged buyout rules for a "consulting donation" of $1.5M.'
+            },
+            {
+                id: 'ownsNewspaper',
+                name: 'Buy a Major Newspaper',
+                cost: 3000000,
+                desc: 'Purchase "The Financial Sentinel". Gives a 50% chance to bury negative press exposés and unlocks active PR cleanup.',
+                triggerText: 'A newspaper publisher, drowning in digital-age debt, offers you his entire media empire for $3.0M. Think of the positive press you can write about your own liquidations!'
+            },
+            {
+                id: 'hasMercSec',
+                name: 'Hire Mercenary Security Detail',
+                cost: 1000000,
+                desc: 'Heavily armed former special ops bodyguards. Grants 100% immunity to worker assassination attempts.',
+                triggerText: 'Following threats from union organizers, a private security firm offers to assign a permanent, heavily armed tactical bodyguard detail to your family and towncar for $1.0M.'
+            },
+            {
+                id: 'hasShellCorp',
+                name: 'Set up Delaware Shell Corp Network',
+                cost: 500000,
+                desc: 'Reduces your shadow interest rate on personal debt from 10% to 5% and doubles your maximum credit limit to $20M.',
+                triggerText: 'A bespoke legal architect offers to craft a highly complex network of shell companies and trusts in Wilmington. This will obfuscate your personal debts, halving interest to 5% and doubling your credit limit.'
+            },
+            {
+                id: 'hasJusticeFriend',
+                name: 'Fund a Supreme Court Justice Friend',
+                cost: 5000000,
+                desc: 'Absolute immunity to federal regulatory audits, SEC lawsuits, and compliance fines.',
+                triggerText: 'An elite legal facilitator whispers that an influential Supreme Court Justice loves taking luxury trips on mega-yachts. A "hospitality funding" of $5.0M secures you lifetime structural immunity from federal enforcement.'
+            }
+        ];
+
+        // Formatting utilities
+        function formatMoney(amount) {
+            const sign = amount < 0 ? '-' : '';
+            const absAmt = Math.abs(amount);
+            if (absAmt >= 1000000) {
+                return sign + '$' + (absAmt / 1000000).toFixed(2) + 'M';
+            } else if (absAmt >= 1000) {
+                return sign + '$' + (absAmt / 1000).toFixed(0) + 'k';
+            } else {
+                return sign + '$' + absAmt.toFixed(0);
+            }
+        }
+
+        // Initialize Game on Window Load
+        window.onload = function() {
+            initGame();
+        };
+
+        function initGame() {
+            game.cash = 10000000;
+            game.debt = 2000000;
+            game.heat = 20;
+            game.location = 'Cayman Islands';
+            game.turn = 1;
+            game.marketCrashTurns = 0;
+            game.creditFreezeTurns = 0;
+            game.strikeTurns = {};
+            
+            // Reset Upgrades
+            for (let k in game.upgrades) {
+                game.upgrades[k] = false;
+            }
+
+            // Copy static companies
+            game.companies = JSON.parse(JSON.stringify(staticCompanies)).map(c => {
+                c.isOwned = false;
+                c.isBankrupt = false;
+                c.isSold = false;
+                c.isStripped = false;
+                c.hasDividendRecap = false;
+                c.isCostCut = false;
+                return c;
+            });
+
+            // Initial Acquisitions Pool
+            refreshLocalAcquisitions();
+
+            // Clear Log
+            const container = document.getElementById('log-container');
+            container.innerHTML = '';
+            
+            addLog('SYSTEM: Vulture Terminal 1000 boot sequence initiated...', 'system');
+            addLog('SYSTEM: Managing Partner authorized. Personal balance: $10.0M cash, $2.0M initial shadow debt.', 'system');
+            addLog('SYSTEM: Objective: Strip and flip targets, maximize Net Worth over 30 turns. Avoid regulatory or physical termination.', 'system');
+            addLog('TIP: Click into "Searsly" or "Red Lobotomy" once purchased to begin asset stripping operations!', 'system');
+
+            updateUI();
+            
+            // Add keyboard handler
+            document.removeEventListener('keydown', handleKeyDown);
+            document.addEventListener('keydown', handleKeyDown);
+        }
+
+        // Keyboard Shortcut Engine
+        function handleKeyDown(e) {
+            // If inside modal, check inputs
+            const companyModal = document.getElementById('company-modal');
+            const eventModal = document.getElementById('event-modal');
+
+            if (eventModal.classList.contains('active')) {
+                // Event Modal is active: Intercept keys for options (1, 2, 3...)
+                const optionButtons = document.querySelectorAll('#event-actions button');
+                const keyNum = parseInt(e.key);
+                if (keyNum >= 1 && keyNum <= optionButtons.length) {
+                    optionButtons[keyNum - 1].click();
+                }
+                return;
+            }
+
+            if (companyModal.classList.contains('active')) {
+                // Company Action Modal Keys
+                const key = e.key.toUpperCase();
+                if (key === 'S') performStrip();
+                else if (key === 'D') performRecap();
+                else if (key === 'C') performCut();
+                else if (key === 'F') performFlip();
+                else if (key === 'X') performBankrupt();
+                else if (key === 'E') closeCompanyModal();
+                return;
+            }
+
+            // Main Dashboard Keys
+            const key = e.key.toUpperCase();
+            if (key === 'B') borrowCash();
+            else if (key === 'P') repayDebt();
+            else if (key === '1') travelTo('Cayman Islands');
+            else if (key === '2') travelTo('Wall Street (NYC)');
+            else if (key === '3') travelTo('Silicon Valley');
+            else if (key === '4') travelTo('Delaware');
+            else if (key === '5') travelTo('London City');
+        }
+
+        // Add Line to Console Log
+        function addLog(text, className = '') {
+            const container = document.getElementById('log-container');
+            const line = document.createElement('div');
+            line.className = `log-line ${className}`;
+            
+            // Current turn prefix
+            const turnPrefix = `> [TURN ${String(game.turn).padStart(2, '0')}] `;
+            line.innerText = turnPrefix + text;
+            
+            container.appendChild(line);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Generate dynamic Acquisitions subset for a location
+        function refreshLocalAcquisitions() {
+            // Find unowned, unbankrupt, unsold companies
+            const pool = game.companies.filter(c => !c.isOwned && !c.isBankrupt && !c.isSold);
+            
+            // Shuffle
+            pool.sort(() => Math.random() - 0.5);
+            
+            // Cayman gets 2, NYC gets 4, others get 3 available acquisitions
+            let count = 3;
+            if (game.location === 'Cayman Islands') count = 2;
+            else if (game.location === 'Wall Street (NYC)') count = 4;
+
+            const selected = pool.slice(0, count);
+
+            // Compute current valuation dynamically based on location
+            const loc = locations.find(l => l.name === game.location);
+            let mult = loc ? loc.multiplier : 1.0;
+
+            selected.forEach(c => {
+                let localMult = mult;
+                if (game.location === 'Silicon Valley') {
+                    // Hyper volatile
+                    localMult += (Math.random() * 0.8 - 0.4); // Adds -40% to +40%
+                } else {
+                    localMult += (Math.random() * 0.2 - 0.1); // Adds -10% to +10%
+                }
+                
+                // If market crash is active, apply 30% markdown
+                if (game.marketCrashTurns > 0) {
+                    localMult *= 0.7;
+                }
+
+                localMult = Math.max(0.3, localMult); // Hard floor
+                c.valuation = Math.round(c.baseValuation * localMult);
+                
+                // Check if assets should scale slightly with valuation
+                c.assets = Math.min(c.assets, Math.round(c.valuation * 0.9));
+            });
+
+            game.availableAcquisitions = selected;
+        }
+
+        // Borrowing & Debt Management
+        function borrowCash() {
+            playBeep('click');
+            if (game.creditFreezeTurns > 0) {
+                showSimpleEventAlert("CREDIT LINE FROZEN", `Due to negative media coverage, Wall Street banks have suspended your credit privileges. Freeze expires in ${game.creditFreezeTurns} turns.`);
+                return;
+            }
+
+            const limit = game.upgrades.hasShellCorp ? 20000000 : 10000000;
+            if (game.debt >= limit) {
+                addLog(`BORROW REJECTED: Shadow lending caps reached (${formatMoney(limit)}). Set up Shell Corp to expand leverage limit.`, 'bad-event');
+                return;
+            }
+
+            game.cash += 1000000;
+            game.debt += 1000000;
+            addLog(`BORROW: Drew $1.0M cash under personal recourse. Total personal debt is now ${formatMoney(game.debt)}.`, 'system');
+            updateUI();
+        }
+
+        function repayDebt() {
+            playBeep('click');
+            if (game.debt <= 0) {
+                addLog('REPAY REJECTED: Personal leverage is already zero.', 'system');
+                return;
+            }
+            if (game.cash < 1000000) {
+                addLog('REPAY REJECTED: Insufficient cash. Liquidate assets, strip companies, or flip to secure $1.0M.', 'bad-event');
+                return;
+            }
+
+            game.cash -= 1000000;
+            game.debt -= 1000000;
+            addLog(`REPAY: Repaid $1.0M personal shadow debt. Remaining liability: ${formatMoney(game.debt)}.`, 'system');
+            updateUI();
+        }
+
+        // TRAVEL / TRAVEL ENGINE
+        function travelTo(locName) {
+            if (game.location === locName) {
+                addLog(`TRAVEL: You are already in ${locName}. Select alternative target region to advance turns.`, 'system');
+                return;
+            }
+
+            playBeep('travel');
+            
+            // 1. Advance Turn
+            game.turn++;
+            game.location = locName;
+
+            // 2. Adjust temporary modifiers
+            if (game.marketCrashTurns > 0) game.marketCrashTurns--;
+            if (game.creditFreezeTurns > 0) game.creditFreezeTurns--;
+
+            // 3. Accrue Personal Debt Interest
+            const rate = game.upgrades.hasShellCorp ? 0.05 : 0.10;
+            const interest = Math.round(game.debt * rate);
+            if (interest > 0) {
+                game.debt += interest;
+                addLog(`INTEREST ACCRUED: Personal shadow debt accrued ${formatMoney(interest)} in interest (${(rate*100).toFixed(0)}% rate).`, 'bad-event');
+            }
+
+            // 4. Accrue Owned Company Financials (Operating cash flow leaks / boosts)
+            const owned = game.companies.filter(c => c.isOwned);
+            owned.forEach(c => {
+                // If company is striking, its profits drop drastically
+                let activeProfit = c.profit;
+                if (game.strikeTurns[c.id] && game.strikeTurns[c.id] > 0) {
+                    game.strikeTurns[c.id]--;
+                    activeProfit -= 300000;
+                    addLog(`STRIKE ALERT: ${c.name} workers striking! Operations frozen, cash drainage: ${formatMoney(activeProfit)}/mo.`, 'bad-event');
+                }
+
+                if (activeProfit < 0) {
+                    // Cash drainage is loaded onto company debt!
+                    const drainage = Math.abs(activeProfit);
+                    c.debt += drainage;
+                    
+                    // Severe debt drains company viability
+                    const viabilityCost = Math.ceil((drainage / c.baseValuation) * 20);
+                    c.viability = Math.max(0, c.viability - viabilityCost);
+                    
+                    addLog(`OPERATING REPORT: ${c.name} lost ${formatMoney(drainage)} in operations. Loaded onto company debt. Viability fell by ${viabilityCost}%.`, 'bad-event');
+                } else {
+                    // Positive operating profit is paid directly to your personal fund as a management/dividend fee!
+                    game.cash += activeProfit;
+                    addLog(`OPERATING REPORT: Collected ${formatMoney(activeProfit)} management fee from profitable ${c.name}.`, 'success');
+                }
+
+                // If company viability hits 0%, it collapses in bankruptcy!
+                if (c.viability <= 0) {
+                    triggerAutomaticBankruptcy(c);
+                }
+            });
+
+            // 5. Refresh Available Targets
+            refreshLocalAcquisitions();
+
+            // 6. Check Turn Limit / Retirement
+            if (game.turn > game.maxTurns) {
+                triggerRetirement();
+                return;
+            }
+
+            // 7. Check Bankrupt / Loss
+            const netWorth = calculateNetWorth();
+            if (game.cash < 0 && netWorth < 0) {
+                triggerPersonalBankruptcy();
+                return;
+            }
+
+            addLog(`ARRIVED: Swung down in private jet at ${locName}. Market valuations refreshed.`, 'system');
+
+            // 8. Event Roller Engine (Calculated on Heat probability)
+            let eventTriggered = false;
+            
+            // Check for Bad Event
+            const roll = Math.random() * 100;
+            // Delaware mitigates lawsuit risk by 75%
+            const multiplier = (game.location === 'Delaware') ? 0.25 : 1.0;
+            const eventThreshold = game.heat * multiplier;
+
+            if (roll < eventThreshold && game.heat > 0) {
+                eventTriggered = triggerRandomBadEvent();
+            }
+
+            // If no bad event, roll for Opportunistic Upgrades
+            if (!eventTriggered && Math.random() < 0.35) {
+                triggerOpportunisticUpgrade();
+            }
+
+            updateUI();
+        }
+
+        // Dynamic Net Worth calculator
+        function calculateNetWorth() {
+            let sumValuation = 0;
+            game.companies.forEach(c => {
+                if (c.isOwned) {
+                    // Equity value of company is its current Valuation minus its loaded Company Debt
+                    sumValuation += Math.max(0, c.valuation - c.debt);
+                }
+            });
+            return game.cash + sumValuation - game.debt;
+        }
+
+        // Automatic company bankruptcy
+        function triggerAutomaticBankruptcy(c) {
+            c.isOwned = false;
+            c.isBankrupt = true;
+            
+            // Major Heat spike
+            const heatGain = 35;
+            const finalHeatGain = game.upgrades.bribedSenator ? Math.round(heatGain * 0.5) : heatGain;
+            game.heat = Math.min(100, game.heat + finalHeatGain);
+
+            playBeep('alert');
+            showSimpleEventAlert("PORTFOLIO COMPONENT BANKRUPTCY", 
+                `CRITICAL EXCEPTION: ${c.name} has declared Chapter 7 insolvency. Its operating viability hit 0% after severe financial engineering. All equity was wiped out. Workers' pensions have evaporated. Regulatory heat spikes!`);
+            
+            addLog(`COLLAPSE: ${c.name} went completely bankrupt! Outrage ensues. Heat +${finalHeatGain}%!`, 'bankrupt');
+        }
+
+        // ACQUIRE A TARGET
+        function buyCompany(companyId) {
+            playBeep('click');
+            const c = game.companies.find(comp => comp.id === companyId);
+            if (!c) return;
+
+            if (game.cash < c.valuation) {
+                showSimpleEventAlert("INSUFFICIENT CAPITAL", `You need ${formatMoney(c.valuation)} cash to buy ${c.name}, but you only have ${formatMoney(game.cash)}. Press [B] to draw high-interest shadow leverage, or strip/flip other companies to generate liquidity!`);
+                return;
+            }
+
+            game.cash -= c.valuation;
+            c.isOwned = true;
+            
+            // Remove from available local acquisitions
+            game.availableAcquisitions = game.availableAcquisitions.filter(comp => comp.id !== companyId);
+
+            addLog(`ACQUIRED: Purchased ${c.name} for ${formatMoney(c.valuation)} personal cash. Loaded ${formatMoney(c.debt)} existing company debt into your structural liabilities.`, 'buy');
+            playBeep('success');
+            updateUI();
+        }
+
+        // UI POPULATORS / RENDER ENGINE
+        function updateUI() {
+            // Stats
+            document.getElementById('turn-display').innerText = `${String(game.turn).padStart(2, '0')}/${game.maxTurns}`;
+            document.getElementById('cash-display').innerText = formatMoney(game.cash);
+            
+            const debtDisplay = document.getElementById('debt-display');
+            debtDisplay.innerText = formatMoney(game.debt);
+            if (game.debt > 0) {
+                debtDisplay.className = 'red-highlight';
+            } else {
+                debtDisplay.className = 'white-highlight';
+            }
+
+            const nw = calculateNetWorth();
+            const nwDisplay = document.getElementById('net-worth-display');
+            nwDisplay.innerText = formatMoney(nw);
+            if (nw < 0) {
+                nwDisplay.style.color = '#ff3333';
+            } else {
+                nwDisplay.style.color = '#fff';
+            }
+
+            document.getElementById('location-display').innerText = game.location;
+            
+            // Heat bar
+            document.getElementById('heat-fill').style.width = `${game.heat}%`;
+            document.getElementById('heat-text').innerText = `${game.heat}%`;
+
+            // Interest display
+            const rate = game.upgrades.hasShellCorp ? "5.0%" : "10.0%";
+            document.getElementById('interest-rate-text').innerText = `${rate} / turn`;
+            
+            const limit = game.upgrades.hasShellCorp ? "$20.0M" : "$10.0M";
+            document.getElementById('credit-limit-text').innerText = limit;
+
+            // Travel Panel
+            const travelContainer = document.getElementById('travel-buttons');
+            travelContainer.innerHTML = '';
+            locations.forEach((l, index) => {
+                const btn = document.createElement('button');
+                const shortcut = index + 1;
+                btn.innerHTML = `[${shortcut}] ${l.name}`;
+                btn.title = l.desc;
+                if (game.location === l.name) {
+                    btn.disabled = true;
+                    btn.innerHTML += ' (HERE)';
+                } else {
+                    btn.onclick = () => travelTo(l.name);
+                }
+                travelContainer.appendChild(btn);
+            });
+
+            // UPGRADES BAR
+            const upgradesContainer = document.getElementById('upgrades-status');
+            upgradesContainer.innerHTML = '';
+            let ownedUpgrades = 0;
+            for (let id in game.upgrades) {
+                const active = game.upgrades[id];
+                const item = upgradeItems.find(u => u.id === id);
+                if (active) {
+                    ownedUpgrades++;
+                    const span = document.createElement('span');
+                    span.className = 'green-highlight';
+                    span.innerText = `[x] ${item.name}`;
+                    span.title = item.desc;
+                    upgradesContainer.appendChild(span);
+                }
+            }
+            if (ownedUpgrades === 0) {
+                upgradesContainer.innerHTML = '<span style="color: rgba(57,255,20,0.5)">[ ] No active legal shields or bribed assets. You are fully exposed to audits and security events.</span>';
+            }
+
+            // PORTFOLIO RENDERING
+            const portfolioContainer = document.getElementById('portfolio-list');
+            portfolioContainer.innerHTML = '';
+            const owned = game.companies.filter(c => c.isOwned);
+            
+            if (owned.length === 0) {
+                portfolioContainer.innerHTML = '<p style="text-align: center; color: rgba(57, 255, 20, 0.4); padding-top: 40px;">No companies currently in portfolio.<br>Spend cash on Available Targets to execute leveraged buyouts.</p>';
+            } else {
+                owned.forEach(c => {
+                    const item = document.createElement('div');
+                    item.className = 'list-item';
+                    
+                    const strikeLabel = (game.strikeTurns[c.id] && game.strikeTurns[c.id] > 0) 
+                        ? ` <span class="red-highlight">[STRIKE: ${game.strikeTurns[c.id]}t]</span>` 
+                        : '';
+
+                    item.innerHTML = `
+                        <div class="list-item-details">
+                            <span class="company-name" onclick="openCompanyModal('${c.id}')">${c.name}</span>${strikeLabel}
+                            <div class="company-stats">
+                                Valuation: ${formatMoney(c.valuation)} | Company Debt: ${formatMoney(c.debt)} | Viability: ${c.viability}%
+                                <br>Flow: <span style="color: ${c.profit < 0 ? '#ff3333' : '#33ff33'}">${c.profit < 0 ? '' : '+'}${formatMoney(c.profit)}/turn</span> | Strip Assets: ${formatMoney(c.assets)}
+                            </div>
+                        </div>
+                        <div class="list-item-action">
+                            <button onclick="openCompanyModal('${c.id}')">[MANAGE]</button>
+                        </div>
+                    `;
+                    portfolioContainer.appendChild(item);
+                });
+            }
+
+            // ACQUISITIONS RENDERING
+            const acquisitionsContainer = document.getElementById('acquisitions-list');
+            acquisitionsContainer.innerHTML = '';
+            
+            if (game.availableAcquisitions.length === 0) {
+                acquisitionsContainer.innerHTML = '<p style="text-align: center; color: rgba(57, 255, 20, 0.4); padding-top: 40px;">No targets available in this hub.<br>Travel to alternate markets to scout fresh targets.</p>';
+            } else {
+                game.availableAcquisitions.forEach(c => {
+                    const item = document.createElement('div');
+                    item.className = 'list-item';
+                    
+                    const buyDisabled = game.cash < c.valuation ? 'disabled' : '';
+
+                    item.innerHTML = `
+                        <div class="list-item-details">
+                            <span style="font-weight: bold; font-size:15px; color:#fff;">${c.name}</span> <span style="font-size:10px; color:rgba(57,255,20,0.6)">(${c.original})</span>
+                            <div class="company-stats">
+                                Acquisition Cost: <span class="white-highlight" style="text-decoration: underline;">${formatMoney(c.valuation)}</span>
+                                <br>Operating Yield: <span style="color: ${c.profit < 0 ? '#ff3333' : '#33ff33'}">${c.profit < 0 ? '' : '+'}${formatMoney(c.profit)}/turn</span>
+                                <br>Strippable Assets: ${formatMoney(c.assets)} | Initial Viability: ${c.viability}%
+                            </div>
+                        </div>
+                        <div class="list-item-action">
+                            <button ${buyDisabled} onclick="buyCompany('${c.id}')">BUY</button>
+                        </div>
+                    `;
+                    acquisitionsContainer.appendChild(item);
+                });
+            }
+        }
+
+        // DETAILS & FINANCIAL OPERATIONS FOR OWNED COMPANIES (MODAL)
+        function openCompanyModal(companyId) {
+            playBeep('click');
+            const c = game.companies.find(comp => comp.id === companyId);
+            if (!c) return;
+
+            game.selectedCompany = c;
+
+            document.getElementById('modal-company-title').innerText = `${c.name.toUpperCase()} (PARODY OF ${c.original.toUpperCase()})`;
+            document.getElementById('modal-company-desc').innerText = c.description;
+            
+            document.getElementById('modal-company-viability').innerText = `${c.viability}%`;
+            if (c.viability < 40) {
+                document.getElementById('modal-company-viability').className = 'red-highlight';
+            } else {
+                document.getElementById('modal-company-viability').className = '';
+            }
+
+            document.getElementById('modal-company-valuation').innerText = formatMoney(c.valuation);
+            document.getElementById('modal-company-assets').innerText = formatMoney(c.assets);
+            document.getElementById('modal-company-debt').innerText = formatMoney(c.debt);
+            
+            const profDisplay = document.getElementById('modal-company-profit');
+            profDisplay.innerText = `${c.profit < 0 ? '' : '+'}${formatMoney(c.profit)} / turn`;
+            if (c.profit < 0) {
+                profDisplay.style.color = '#ff3333';
+            } else {
+                profDisplay.style.color = '#33ff33';
+            }
+
+            // Disable buttons based on limits
+            document.getElementById('btn-modal-strip').disabled = (c.assets <= 0);
+            document.getElementById('btn-modal-recap').disabled = (c.valuation <= 0);
+
+            const modal = document.getElementById('company-modal');
+            modal.classList.add('active');
+        }
+
+        function closeCompanyModal() {
+            playBeep('click');
+            const modal = document.getElementById('company-modal');
+            modal.classList.remove('active');
+            game.selectedCompany = null;
+        }
+
+        // Action 1: Asset Strip
+        function performStrip() {
+            playBeep('click');
+            const c = game.selectedCompany;
+            if (!c || c.assets <= 0) return;
+
+            // Generate Cash
+            const yieldAmt = Math.round(c.assets * 0.50);
+            game.cash += yieldAmt;
+            
+            // Alter company parameters
+            c.assets = 0; // Strip can only occur once
+            c.viability = Math.max(0, c.viability - 25);
+            
+            // Rent expense added to company operations
+            const rentCost = 150000;
+            c.profit -= rentCost;
+            
+            // Valuation drops severely
+            c.valuation = Math.max(0, Math.round(c.valuation * 0.55) - 500000);
+
+            addLog(`STRIP: Asset stripped ${c.name} real estate portfolio. Liquidated buildings for ${formatMoney(yieldAmt)} personal cash. Forced ${c.name} into long-term high-rate lease contracts. Operating cost spikes!`, 'strip');
+            playBeep('success');
+
+            if (c.viability <= 0) {
+                closeCompanyModal();
+                triggerAutomaticBankruptcy(c);
+            } else {
+                openCompanyModal(c.id); // Refresh modal view
+            }
+            updateUI();
+        }
+
+        // Action 2: Leveraged Dividend Recap
+        function performRecap() {
+            playBeep('click');
+            const c = game.selectedCompany;
+            if (!c || c.valuation <= 0) return;
+
+            // Force company to issue debt and pay it to player
+            const recapAmt = Math.round(c.valuation * 0.50);
+            game.cash += recapAmt;
+            
+            // Alter company parameters
+            c.debt += recapAmt;
+            c.viability = Math.max(0, c.viability - 15);
+            
+            // Company must pay interest on its new debt (lowers operating profit)
+            const annualInterest = Math.round(recapAmt * 0.12);
+            c.profit -= Math.round(annualInterest / 12);
+
+            addLog(`RECAP: Forced ${c.name} to borrow ${formatMoney(recapAmt)} in high-yield debt. Transferred the entire sum directly to your personal fund as a special dividend. Company loaded with leverage interest!`, 'recap');
+            playBeep('success');
+
+            if (c.viability <= 0) {
+                closeCompanyModal();
+                triggerAutomaticBankruptcy(c);
+            } else {
+                openCompanyModal(c.id); // Refresh modal view
+            }
+            updateUI();
+        }
+
+        // Action 3: Synergy Optimization (Layoffs)
+        function performCut() {
+            playBeep('click');
+            const c = game.selectedCompany;
+            if (!c) return;
+
+            // Reduces expenses
+            const savings = 150000;
+            c.profit += savings;
+            
+            // Viability drop (operational degradation)
+            c.viability = Math.max(0, c.viability - 10);
+            
+            // Heat Spikes (public backlash)
+            const heatGain = 15;
+            const finalHeatGain = game.upgrades.bribedSenator ? Math.round(heatGain * 0.5) : heatGain;
+            game.heat = Math.min(100, game.heat + finalHeatGain);
+
+            addLog(`OPTIMIZE: Conducted aggressive "Synergy Optimization" on ${c.name}. Fired 30% of employees and slashed pensions. Restored ${formatMoney(savings)}/turn in operating yield, but public backlash triggered heat (+${finalHeatGain}%).`, 'cut');
+            playBeep('success');
+
+            if (c.viability <= 0) {
+                closeCompanyModal();
+                triggerAutomaticBankruptcy(c);
+            } else {
+                openCompanyModal(c.id); // Refresh modal
+            }
+            updateUI();
+        }
+
+        // Action 4: Flip Company (Sell)
+        function performFlip() {
+            playBeep('click');
+            const c = game.selectedCompany;
+            if (!c) return;
+
+            // Payout is current equity value: Valuation - Company Debt
+            const equityVal = c.valuation - c.debt;
+            
+            if (equityVal < 0) {
+                showSimpleEventAlert("OUT-OF-THE-MONEY EQUITY", 
+                    `You cannot sell ${c.name} for a profit. The company debt (${formatMoney(c.debt)}) exceeds its market valuation (${formatMoney(c.valuation)}), leaving negative equity of ${formatMoney(equityVal)}. You must either inject personal capital to clear the debt, cut costs to raise valuation, or file for Chapter 11 bankruptcy!`);
+                return;
+            }
+
+            game.cash += equityVal;
+            c.isOwned = false;
+            c.isSold = true;
+
+            addLog(`FLIP: Sold your equity stake in ${c.name} back to public retail investors for ${formatMoney(equityVal)} net personal cash. Good luck to their mutual funds!`, 'success');
+            playBeep('success');
+            
+            closeCompanyModal();
+            updateUI();
+        }
+
+        // Action 5: Bankruptcy (Chapter 11)
+        function performBankrupt() {
+            playBeep('click');
+            const c = game.selectedCompany;
+            if (!c) return;
+
+            c.isOwned = false;
+            c.isBankrupt = true;
+
+            // Outrage
+            const heatGain = 35;
+            const finalHeatGain = game.upgrades.bribedSenator ? Math.round(heatGain * 0.5) : heatGain;
+            game.heat = Math.min(100, game.heat + finalHeatGain);
+
+            addLog(`CHAPTER 11: Placed ${c.name} into bankruptcy liquidation. Wiped out public creditors, cancelled remaining labor contracts, and walked away with your prior stripped dividends. Heat +${finalHeatGain}%!`, 'bankrupt');
+            playBeep('alert');
+            
+            closeCompanyModal();
+            updateUI();
+        }
+
+        // MODAL EVENT POPUP UTILITY
+        function showEventModal(title, text, options) {
+            playBeep('alert');
+            document.getElementById('event-title').innerText = title;
+            document.getElementById('event-body').innerHTML = text;
+            
+            const btnContainer = document.getElementById('event-actions');
+            btnContainer.innerHTML = '';
+            
+            options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.innerHTML = `[${index + 1}] ${opt.text}`;
+                btn.onclick = () => {
+                    playBeep('click');
+                    closeEventModal();
+                    opt.action();
+                };
+                btnContainer.appendChild(btn);
+            });
+
+            document.getElementById('event-modal').classList.add('active');
+        }
+
+        function closeEventModal() {
+            document.getElementById('event-modal').classList.remove('active');
+        }
+
+        function showSimpleEventAlert(title, text) {
+            showEventModal(title, text, [{ text: "ACKNOWLEDGE", action: () => {} }]);
+        }
+
+        // RANDOM BAD EVENTS ENGINE
+        function triggerRandomBadEvent() {
+            // Select one of 5 bad events
+            let roll = Math.floor(Math.random() * 5);
+            
+            // Reduce the probability of Luigi attack by 80%
+            if (roll === 2 && Math.random() >= 0.2) {
+                const otherRolls = [0, 1, 3, 4];
+                roll = otherRolls[Math.floor(Math.random() * otherRolls.length)];
+            }
+            
+            if (roll === 0) {
+                // Event 1: SEC Audit
+                const title = "SEC SECURITIES FRAUD AUDIT";
+                let text = "Federal regulators are investigating a string of suspicious dividend recap loans and asset stripping shell networks linked to your fund.";
+                
+                if (game.upgrades.hasJusticeFriend) {
+                    text += "<br><br><span style='color:#33ff33;'>IMMUNITY ACTIVATED: Your funded Supreme Court Justice 'friend' placed an informal call to the regional SEC enforcement office. The investigation is quietly dismissed.</span>";
+                    showEventModal(title, text, [
+                        { text: "CLOSE LAW BOOK AND LAUGH", action: () => {
+                            addLog("SEC AUDIT: Regulatory probe instantly quashed by your Supreme Court Justice asset.", "upgrade");
+                            updateUI();
+                        }}
+                    ]);
+                } else {
+                    const settlementCost = 2500000;
+                    const lawyerCost = 1000000;
+                    text += `<br><br>The Department of Justice offers a settlement to bury the charges. Do you pay or call the lawyers?`;
+                    
+                    showEventModal(title, text, [
+                        { 
+                            text: `PAY SETTLEMENT DEFICIENCY (${formatMoney(settlementCost)})`, 
+                            action: () => {
+                                if (game.cash >= settlementCost) {
+                                    game.cash -= settlementCost;
+                                    game.heat = 10; // Reset heat
+                                    addLog(`SEC AUDIT: Settled fraud case for ${formatMoney(settlementCost)} personal cash. Heat reset to 10%.`, 'bad-event');
+                                } else {
+                                    addLog(`SEC AUDIT: Attempted to pay settlement, but personal cash was deficient. Handed to federal prosecutors!`, 'bad-event');
+                                    triggerSECArrest();
+                                }
+                                updateUI();
+                            }
+                        },
+                        {
+                            text: `FIGHT AUDIT IN COURT (Lawyers: ${formatMoney(lawyerCost)} | Heat +30%)`,
+                            action: () => {
+                                if (game.cash >= lawyerCost) {
+                                    game.cash -= lawyerCost;
+                                    game.heat = Math.min(100, game.heat + 30);
+                                    addLog(`SEC AUDIT: Engaged white-collar defense firm for ${formatMoney(lawyerCost)}. Case postponed. Heat +30%!`, 'bad-event');
+                                } else {
+                                    addLog(`SEC AUDIT: Attempted to hire lawyers, but cash was deficient. Detained at federal court!`, 'bad-event');
+                                    triggerSECArrest();
+                                }
+                                updateUI();
+                            }
+                        }
+                    ]);
+                }
+                return true;
+            } 
+            else if (roll === 1) {
+                // Event 2: Union Pension Strike
+                const owned = game.companies.filter(c => c.isOwned);
+                if (owned.length === 0) return false; // Failover
+
+                // Select a company
+                const targetComp = owned[Math.floor(Math.random() * owned.length)];
+                const title = "UNION PENSION PROTEST";
+                const text = `Angry employees and union pension organizers have blockaded the corporate headquarters of <span class='white-highlight'>${targetComp.name}</span>. They are chanting about "parasites" and refusing to work. Operations are fully frozen!
+                             <br><br><span class='red-highlight'>Effect: ${targetComp.name} Valuation halved. Monthly operations drop by -$300k/turn for the next 3 turns. Regulatory heat increases.</span>`;
+                
+                showEventModal(title, text, [
+                    {
+                        text: "RELEASE THE UNION BUSTERS",
+                        action: () => {
+                            targetComp.valuation = Math.round(targetComp.valuation * 0.5);
+                            game.strikeTurns[targetComp.id] = 3;
+                            game.heat = Math.min(100, game.heat + 15);
+                            addLog(`UNION STRIKE: Union strikers froze operations at ${targetComp.name}. Valuation halved. Operational yields tanked. Heat +15%.`, 'bad-event');
+                            updateUI();
+                        }
+                    }
+                ]);
+                return true;
+            } 
+            else if (roll === 2) {
+                // Event 3: Luigi Mangione Assassination Attempt
+                const title = "LUIGI MANGIONE RETALIATION STRIKE";
+                let text = "An angry former factory supervisor who was fired during one of your cost-cutting synergy campaigns has tracked your towncar and pulled a high-powered weapon!";
+                
+                if (game.upgrades.hasMercSec) {
+                    text += "<br><br><span style='color:#33ff33;'>IMMUNITY ACTIVATED: Your elite private mercenary bodyguards instantly return fire with tactical submachine guns. The assailant is neutralized. You sip your Macallan 25 year single-malt in complete safety.</span>";
+                    showEventModal(title, text, [
+                        { text: "WIPE A SPECK OF DUST OFF YOUR ARMANI", action: () => {
+                            addLog("ASSASSINATION THREAT: Retaliation neutralized by your tactical executive security detail.", "upgrade");
+                            updateUI();
+                        }}
+                    ]);
+                } else {
+                    const hospitalBill = 2000000;
+                    text += `<br><br><span class='red-highlight'>You survived the impact, but suffered extreme trauma. Undergoing emergency non-union surgical procedures at a private hospital costs a premium of $2,000,000 cash.</span>`;
+                    
+                    showEventModal(title, text, [
+                        {
+                            text: `SURRENDER TO CAPITAL HOSPITAL FEES ($2.0M)`,
+                            action: () => {
+                                if (game.cash >= hospitalBill) {
+                                    game.cash -= hospitalBill;
+                                    addLog(`ASSASSINATION THREAT: Hospitalized after union assassination attempt. Paid $2.0M in private surgery fees.`, 'bad-event');
+                                } else {
+                                    addLog(`ASSASSINATION THREAT: Shot and unable to afford premium hospital care! Underwent public health emergency treatment...`, 'bad-event');
+                                    triggerAssassinationLoss();
+                                }
+                                updateUI();
+                            }
+                        }
+                    ]);
+                }
+                return true;
+            } 
+            else if (roll === 3) {
+                // Event 4: Media Exposé
+                const title = "INVESTIGATIVE PRESS EXPOSÉ";
+                let text = `A national investigative reporter has drafted a highly critical story outlining your asset-stripping techniques, calling you a 'Vampire Squid sucking capital from main street'.`;
+                
+                if (game.upgrades.ownsNewspaper) {
+                    const killStoryCost = 200000;
+                    text += `<br><br><span style='color:#33ff33;'>MEDIA SHIELD ACTIVATED: You own 'The Financial Sentinel'. You can order your editors to run a smear campaign on the reporter and kill the story, or let it slide.</span>`;
+                    
+                    showEventModal(title, text, [
+                        {
+                            text: `SPIKE STORY & SMEAR REPORTER (${formatMoney(killStoryCost)})`,
+                            action: () => {
+                                if (game.cash >= killStoryCost) {
+                                    game.cash -= killStoryCost;
+                                    game.heat = Math.max(0, game.heat - 15);
+                                    addLog(`EXPOSÉ KILLED: Used your newspaper asset to run smear campaign. Killed the investigative story. Heat -15%.`, 'upgrade');
+                                } else {
+                                    addLog(`EXPOSÉ SPIKE: Attempted to pay to kill the story, but cash was deficient. Story published!`, 'bad-event');
+                                    applyExposeEffects();
+                                }
+                                updateUI();
+                            }
+                        },
+                        {
+                            text: "LET STORY PUBLISH (No cost)",
+                            action: () => {
+                                applyExposeEffects();
+                                updateUI();
+                            }
+                        }
+                    ]);
+                } else {
+                    text += `<br><br><span class='red-highlight'>Effect: Regulatory Heat +35%. Shadow bankers are spooked: Your personal borrowing credit is frozen for 3 turns.</span>`;
+                    showEventModal(title, text, [
+                        {
+                            text: "SIGH AND CLOSE THE BLINDS",
+                            action: () => {
+                                applyExposeEffects();
+                                updateUI();
+                            }
+                        }
+                    ]);
+                }
+                return true;
+            } 
+            else if (roll === 4) {
+                // Event 5: Macro Meltdown
+                const title = "MACRO CREDIT CRISIS MELTDOWN";
+                const text = "A rapid spike in federal interest rates trigger a violent macro credit squeeze. Global investment banks are scrambling for collateral. Liquidity is freezing!";
+                
+                showEventModal(title, text, [
+                    {
+                        text: "PREPARE FOR INFLATION SPIKE",
+                        action: () => {
+                            game.marketCrashTurns = 3;
+                            addLog("MACRO CRASH: Sovereign yield spikes froze capital. All company valuations marked down by 30% for 3 turns.", 'bad-event');
+                            updateUI();
+                        }
+                    }
+                ]);
+                return true;
+            }
+            return false;
+        }
+
+        function applyExposeEffects() {
+            game.heat = Math.min(100, game.heat + 35);
+            game.creditFreezeTurns = 3;
+            addLog("EXPOSÉ PUBLISHED: National newspaper called your LBO activities a 'vampire squid'. Heat +35%. Borrowing frozen for 3 turns.", 'bad-event');
+        }
+
+        // DYNAMIC OPPORTUNISTIC UPGRADES ROLLER
+        function triggerOpportunisticUpgrade() {
+            // Filter upgrades that player doesn't have yet
+            const available = upgradeItems.filter(u => !game.upgrades[u.id]);
+            if (available.length === 0) return;
+
+            // Pick one
+            const item = available[Math.floor(Math.random() * available.length)];
+            
+            const title = "EXCLUSIVE CORRUPT OPPORTUNITY";
+            const text = `${item.triggerText}
+                         <br><br><strong>Asset:</strong> <span class='white-highlight'>${item.name}</span>
+                         <br><strong>Cost:</strong> <span class='white-highlight'>${formatMoney(item.cost)}</span>
+                         <br><strong>Effect:</strong> ${item.desc}`;
+            
+            const acceptDisabled = game.cash < item.cost;
+
+            showEventModal(title, text, [
+                {
+                    text: acceptDisabled ? `INSUFFICIENT FUNDS (${formatMoney(item.cost)})` : `WIRE THE TRANSFER (${formatMoney(item.cost)})`,
+                    action: () => {
+                        if (game.cash >= item.cost) {
+                            game.cash -= item.cost;
+                            game.upgrades[item.id] = true;
+                            addLog(`ASSET ACQUIRED: Completed funding for ${item.name}. Benefit activated permanently.`, 'upgrade');
+                            playBeep('success');
+                        } else {
+                            addLog(`TRANSACTION FAILED: Cash reserves insufficient to clear transfer for ${item.name}.`, 'bad-event');
+                        }
+                        updateUI();
+                    }
+                },
+                {
+                    text: "DECLINE THE PROPOSAL",
+                    action: () => {
+                        addLog(`OPPORTUNITY REJECTED: Decided to decline the proposal from the network representative.`, 'system');
+                        updateUI();
+                    }
+                }
+            ]);
+        }
+
+        // GAME LOSS / TERMINATION TRIGGERS
+        function triggerSECArrest() {
+            playBeep('gameover');
+            const title = "SYSTEM ERROR: INCARCERATION ENGAGED";
+            const text = `The FBI and SEC field agents have raided your Greenwich estate. You have been convicted of major securities fraud, systemic asset-stripping bribery, and pension vaporisation.
+                         <br><br>You are sentenced to 12 years at FCI Danbury, a minimum-security facility in Connecticut. The tennis courts are clay instead of grass, and you have to play golf on a simulator instead of a real course. It is an utter nightmare.
+                         <br><br><strong class='red-highlight'>GAME OVER: Convicted Criminal Status.</strong>`;
+            
+            showEventModal(title, text, [
+                { text: "START A NEW VENTURE (RESTART)", action: () => initGame() }
+            ]);
+        }
+
+        function triggerAssassinationLoss() {
+            playBeep('gameover');
+            const title = "SYSTEM ERROR: OPERATOR TERMINATED";
+            const text = `Without private tactical security guards, you succumbed to injuries at the local hospital.
+                         <br><br>Your lavish state funeral was attended only by your trust lawyers, your third ex-spouse, and two IRS agents checking your asset ledger.
+                         <br><br><strong class='red-highlight'>GAME OVER: Physically Terminated.</strong>`;
+            
+            showEventModal(title, text, [
+                { text: "RECARVE THE NATION (RESTART)", action: () => initGame() }
+            ]);
+        }
+
+        function triggerPersonalBankruptcy() {
+            playBeep('gameover');
+            const title = "SYSTEM ERROR: PERSONAL BANKRUPTCY";
+            const text = `Your leverage has crushed you! Your personal liquid Cash has dropped below zero and shadow lenders have margin-called your fund. Your Greenwich mansion and yachts are seized by court order.
+                         <br><br>You are forced to take a job writing a Substack newsletter titled "Synergy Learnings" from a studio apartment in Queens.
+                         <br><br><strong class='red-highlight'>GAME OVER: Bankrupt Outcast Status.</strong>`;
+            
+            showEventModal(title, text, [
+                { text: "ACQUIRE LEVERAGE AGAIN (RESTART)", action: () => initGame() }
+            ]);
+        }
+
+        // WIN CONDITION / RETIREMENT
+        function triggerRetirement() {
+            playBeep('gameover');
+            const finalNW = calculateNetWorth();
+            
+            const title = "RETIREMENT PROTOCOL ACTIVATED";
+            let rankText = "";
+            let evaluationText = "";
+
+            if (finalNW <= 0) {
+                rankText = "FAILING BANKRUPT (THE WEWORK CLASS)";
+                evaluationText = `You ended up poorer than when you started. Shadow lenders took everything, and you're now writing a Substack newsletter about 'learnings' and 'macro pivots' from a studio apartment.`;
+            } else if (finalNW < 15000000) {
+                rankText = "JUNIOR PRIVATE EQUITY ASSOCIATE";
+                evaluationText = `You survived the 30 months, but you're still flying commercial. Your yacht is a shared fractional-ownership catamaran in Florida. You spend your weekends formatting Excel decks for your managing director.`;
+            } else if (finalNW < 50000000) {
+                rankText = "GENERAL VENTURE PARTNER";
+                evaluationText = `A moderately successful career of squeezing blood from retail stones. You own a nice house in the Hamptons, a healthy fear of populist pitchforks, and a collection of mid-tier Swiss watches.`;
+            } else if (finalNW < 150000000) {
+                rankText = "MANAGING DIRECTOR / OUTLAW VULTURE";
+                evaluationText = `An absolute predator of the corporate world. You have shut down dozens of factories, wiped out thousands of pensions, and successfully bribed multiple federal officials. Your private jet is mid-sized but entirely yours.`;
+            } else {
+                rankText = "VULTURE KING / GLOBAL OLIGARCH";
+                evaluationText = `You are a god of modern financial engineering! You own newspapers, Supreme Court Justices, and a small sovereign island in the South Pacific. You pay negative income tax, and governments rewrite laws to fit your investment thesis. No one can touch you.`;
+            }
+
+            const text = `After 30 months of ruthless private equity engineering, you have retired from the fund.
+                         <br><br><strong>Your Final Net Worth:</strong> <span style='font-size:20px; color:#fff;' class='white-highlight'>${formatMoney(finalNW)}</span>
+                         <br><br><strong>Your Corporate Rank:</strong> <span style='color:#33ff33; font-weight:bold;'>${rankText}</span>
+                         <br><br>${evaluationText}
+                         <br><br>Can you do better in the next fund?`;
+
+            showEventModal(title, text, [
+                { text: "BOOT NEXT FUND (RESTART)", action: () => initGame() }
+            ]);
+        }
+    </script>
+</body>
+</html>
