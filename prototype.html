@@ -5,13 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VULTURE TERMINAL 1000</title>
     <style>
-        /* Retro Terminal CRT Aesthetic Styling */
+        /* Bloomberg Terminal / Pro Finance Aesthetic Styling */
         :root {
-            --term-green: #39ff14;
-            --term-green-glow: rgba(57, 255, 20, 0.45);
-            --term-green-dark: #003300;
-            --bg-color: #050505;
-            --font-stack: "Courier New", Courier, Monaco, monospace;
+            --bb-amber: #ff9900;
+            --bb-amber-glow: rgba(255, 153, 0, 0.3);
+            --bb-amber-dark: #331f00;
+            --bb-green: #00ff00;
+            --bb-red: #ff0000;
+            --bb-cyan: #00ffff;
+            --bb-white: #ffffff;
+            --bg-color: #000000;
+            --panel-bg: #0a0a0a;
+            --border-color: #333333;
+            --font-stack: "Consolas", "Monaco", "Lucida Console", "Courier New", monospace;
         }
 
         * {
@@ -20,70 +26,57 @@
             padding: 0;
         }
 
-        body {
+        html, body {
+            height: 100%;
+            overflow: hidden;
             background-color: var(--bg-color);
-            color: var(--term-green);
+        }
+
+        body {
+            color: var(--bb-amber);
             font-family: var(--font-stack);
-            font-size: 14px;
-            line-height: 1.4;
-            padding: 20px;
-            overflow-x: hidden;
-            position: relative;
-            text-shadow: 0 0 2px var(--term-green-glow);
-        }
-
-        /* Scanline Overlay Effect */
-        body::after {
-            content: " ";
-            display: none; /* temporarily disabled */
-            position: fixed;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
-            background-size: 100% 4px, 6px 100%;
-            z-index: 99999;
-            pointer-events: none;
-        }
-
-        /* Retro Phosphor Screen Flicker */
-        @keyframes crt-flicker {
-            0% { opacity: 0.995; }
-            50% { opacity: 1; }
-            100% { opacity: 0.995; }
+            font-size: 13px;
+            line-height: 1.2;
+            display: flex;
+            flex-direction: column;
         }
 
         .crt-container {
-            max-width: 1100px;
-            margin: 0 auto;
-            border: 2px solid var(--term-green);
-            padding: 15px;
-            box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
-            background: #080808;
-            animation: crt-flicker 0.15s infinite;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            padding: 5px;
+            overflow: hidden;
+            background: var(--bg-color);
         }
 
         header {
-            border-bottom: 2px double var(--term-green);
-            padding-bottom: 10px;
-            margin-bottom: 15px;
+            border-bottom: 1px solid var(--bb-amber);
+            padding: 4px 8px;
+            margin-bottom: 8px;
+            flex-shrink: 0;
         }
 
         .ascii-logo {
-            font-size: 8px;
-            line-height: 1.1;
+            font-size: 6px;
+            line-height: 1;
             white-space: pre;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             letter-spacing: -1px;
-            overflow-x: auto;
+            overflow: hidden;
+            color: var(--bb-amber);
         }
 
         .status-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
+            gap: 15px;
             font-weight: bold;
-            padding: 5px 0;
+            padding: 2px 0;
+            font-size: 11px;
         }
 
         .heat-bar-container {
@@ -92,58 +85,94 @@
         }
 
         .heat-bar {
-            border: 1px solid var(--term-green);
-            width: 150px;
-            height: 14px;
-            margin-left: 10px;
+            border: 1px solid var(--bb-amber);
+            width: 100px;
+            height: 10px;
+            margin-left: 5px;
             position: relative;
-            background: var(--term-green-dark);
+            background: var(--bb-amber-dark);
         }
 
         .heat-bar-fill {
             height: 100%;
-            background-color: var(--term-green);
+            background-color: var(--bb-amber);
         }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+
+        /* Top Stats Bar */
+        .top-stats {
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+            gap: 4px;
+            border: 1px solid var(--border-color);
+            background-color: var(--panel-bg);
+            padding: 4px 8px;
+            flex-shrink: 0;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .stat-label { font-size: 10px; color: #888; text-transform: uppercase; }
+        .stat-value { font-size: 14px; font-weight: bold; }
 
         .dashboard {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            flex: 1;
+            min-height: 300px;
         }
 
-        @media(min-width: 800px) {
+        @media(max-width: 800px) {
             .dashboard {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: 1fr;
+            }
+            .main-content {
+                overflow-y: scroll;
+            }
+            html, body {
+                overflow: auto;
+                height: auto;
             }
         }
 
         .panel {
-            border: 1px solid var(--term-green);
-            padding: 12px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            background-color: var(--panel-bg);
             position: relative;
-            background-color: rgba(0, 5, 0, 0.6);
         }
 
-        .panel-title {
-            position: absolute;
-            top: -10px;
-            left: 15px;
-            background-color: #080808;
-            padding: 0 8px;
+        .panel-header {
+            background-color: var(--bb-amber-dark);
+            color: var(--bb-amber);
+            padding: 2px 8px;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 11px;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .panel-content {
-            margin-top: 5px;
-            min-height: 150px;
+            flex: 1;
+            padding: 5px;
+            overflow-y: auto;
         }
 
         /* Interactive list items */
         .list-item {
-            border-bottom: 1px dotted var(--term-green);
-            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            padding: 4px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -153,136 +182,116 @@
             border-bottom: none;
         }
 
-        .list-item-details {
-            flex: 1;
-        }
-
         .company-name {
             font-weight: bold;
-            font-size: 15px;
-            text-decoration: underline;
+            font-size: 13px;
+            color: var(--bb-cyan);
             cursor: pointer;
         }
 
         .company-name:hover {
+            background-color: var(--bb-cyan);
             color: #000;
-            background-color: var(--term-green);
         }
 
         .company-stats {
-            font-size: 12px;
-            color: rgba(57, 255, 20, 0.85);
-            margin-top: 3px;
-        }
-
-        .list-item-action {
-            margin-left: 15px;
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 2px;
         }
 
         /* Buttons & Controls */
         button, .btn {
-            background: transparent;
-            border: 1px solid var(--term-green);
-            color: var(--term-green);
+            background: #222;
+            border: 1px solid #555;
+            color: var(--bb-amber);
             font-family: var(--font-stack);
-            font-size: 13px;
-            padding: 5px 10px;
+            font-size: 11px;
+            padding: 2px 6px;
             cursor: pointer;
             text-transform: uppercase;
             outline: none;
-            transition: all 0.1s ease;
         }
 
-        button:hover, .btn:hover {
-            background-color: var(--term-green);
-            color: var(--bg-color);
-            text-shadow: none;
-            box-shadow: 0 0 5px var(--term-green);
-        }
-
-        button:disabled, .btn:disabled {
-            border-color: var(--term-green-dark);
-            color: var(--term-green-dark);
-            cursor: not-allowed;
-            text-shadow: none;
-        }
-
-        button:disabled:hover {
-            background-color: transparent;
-            color: var(--term-green-dark);
-            box-shadow: none;
+        button:hover {
+            border-color: var(--bb-amber);
+            background: #333;
         }
 
         .button-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 5px;
-            margin-top: 8px;
+            gap: 4px;
+            margin-top: 4px;
         }
 
         .travel-group {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-            gap: 5px;
-            margin-top: 8px;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 4px;
         }
 
         .finance-panel {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 8px;
+            flex-shrink: 0;
         }
 
-        @media(min-width: 800px) {
+        @media(max-width: 800px) {
             .finance-panel {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: 1fr;
             }
         }
 
         /* Log Panel styling */
         .log-panel {
-            margin-top: 15px;
-            border: 1px solid var(--term-green);
+            border: 1px solid var(--border-color);
             background-color: #000;
+            flex-shrink: 0;
+        }
+
+        .log-header {
+            background-color: #1a1a1a;
+            color: #888;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .log-container {
-            height: 140px;
+            height: 100px;
             overflow-y: auto;
-            padding: 8px 12px;
-            font-size: 13px;
-            scroll-behavior: smooth;
+            padding: 4px 8px;
+            font-size: 11px;
         }
 
         .log-line {
-            margin-bottom: 4px;
-            font-family: var(--font-stack);
+            margin-bottom: 2px;
         }
 
-        .log-line.system { color: #fff; }
-        .log-line.buy { color: #00ffcc; }
-        .log-line.strip { color: #ff33ff; }
-        .log-line.recap { color: #ffff33; }
+        .log-line.system { color: var(--bb-white); }
+        .log-line.buy { color: var(--bb-cyan); }
+        .log-line.strip { color: #ff00ff; }
+        .log-line.recap { color: #ffff00; }
         .log-line.cut { color: #ff6600; }
-        .log-line.bankrupt { color: #ff3333; }
-        .log-line.success { color: #33ff33; }
-        .log-line.bad-event { color: #ff3333; font-weight: bold; }
-        .log-line.upgrade { color: #33ffff; font-weight: bold; }
+        .log-line.bankrupt { color: var(--bb-red); }
+        .log-line.success { color: var(--bb-green); }
+        .log-line.bad-event { color: var(--bb-red); font-weight: bold; }
+        .log-line.upgrade { color: var(--bb-cyan); font-weight: bold; }
 
         /* Dialog/Modal Overlays */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.85);
+            background-color: rgba(0, 0, 0, 0.9);
             z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 15px;
+            padding: 10px;
             visibility: hidden;
             opacity: 0;
-            transition: opacity 0.2s, visibility 0.2s;
         }
 
         .modal-overlay.active {
@@ -291,92 +300,80 @@
         }
 
         .modal-box {
-            background-color: #030303;
-            border: 2px solid var(--term-green);
-            max-width: 600px;
+            background-color: #050505;
+            border: 1px solid var(--bb-amber);
+            max-width: 500px;
             width: 100%;
-            padding: 20px;
-            box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+            padding: 15px;
             position: relative;
         }
 
         .modal-header {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            border-bottom: 1px solid var(--term-green);
-            padding-bottom: 8px;
-            margin-bottom: 15px;
+            border-bottom: 1px solid var(--bb-amber);
+            padding-bottom: 5px;
+            margin-bottom: 10px;
             text-align: center;
+            color: var(--bb-amber);
         }
 
         .modal-body {
-            margin-bottom: 20px;
-            font-size: 13.5px;
+            margin-bottom: 15px;
+            font-size: 12px;
         }
 
         .modal-action-box {
-            border: 1px dotted var(--term-green);
-            padding: 10px;
-            margin-top: 15px;
-            background-color: var(--term-green-dark);
+            border: 1px solid #333;
+            padding: 8px;
+            margin-top: 10px;
+            background-color: #080808;
         }
 
         .modal-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
+            gap: 8px;
         }
 
         /* Sound Control Switch */
         .sound-toggle {
             float: right;
-            font-size: 12px;
-            border: 1px solid var(--term-green);
-            padding: 1px 5px;
+            font-size: 10px;
+            border: 1px solid #444;
+            padding: 0 4px;
             cursor: pointer;
-            margin-top: -3px;
+            margin-top: -2px;
+            color: #888;
         }
         .sound-toggle:hover {
-            background-color: var(--term-green);
-            color: var(--bg-color);
+            color: var(--bb-amber);
+            border-color: var(--bb-amber);
         }
 
-        /* Flash Indicator */
-        .cursor {
-            display: inline-block;
-            width: 8px;
-            height: 14px;
-            background-color: var(--term-green);
-            animation: cursor-blink 1s infinite;
-            vertical-align: middle;
-            margin-left: 2px;
-        }
-
-        @keyframes cursor-blink {
-            0%, 49% { opacity: 1; }
-            50%, 100% { opacity: 0; }
-        }
-
-        .green-highlight { color: #fff; background-color: var(--term-green-dark); padding: 0 3px; }
-        .red-highlight { color: #ff3333; font-weight: bold; }
-        .white-highlight { color: #fff; font-weight: bold; }
+        .green-highlight { color: var(--bb-green); }
+        .red-highlight { color: var(--bb-red); }
+        .white-highlight { color: var(--bb-white); }
+        .cyan-highlight { color: var(--bb-cyan); }
 
         .stat-grid {
             display: grid;
-            grid-template-columns: 120px 1fr;
-            gap: 5px;
-            margin-bottom: 15px;
+            grid-template-columns: 100px 1fr;
+            gap: 2px;
+            margin-bottom: 10px;
         }
 
-        .stat-label {
-            color: rgba(57, 255, 20, 0.75);
+        .stat-label-modal {
+            color: #888;
             font-weight: bold;
+            font-size: 10px;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
     <div class="crt-container">
-        <!-- HEADER PANEL -->
+        <!-- HEADER -->
         <header>
             <div class="sound-toggle" id="sound-toggle" onclick="toggleSound()">[SOUND: ON]</div>
             <div class="ascii-logo">
@@ -399,83 +396,86 @@ __        _   _   | |     _____  _   _    ___    ___      __      __       _    
             </div>
         </header>
 
-        <!-- PLAYER BALANCES -->
-        <div style="border: 1px solid var(--term-green); padding: 10px; margin-bottom: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; background-color: rgba(0, 15, 0, 0.4);">
-            <div>CASH: <span id="cash-display" class="white-highlight" style="font-size: 16px;">$10,000,000</span></div>
-            <div>PERSONAL DEBT: <span id="debt-display" class="red-highlight" style="font-size: 16px;">$2,000,000</span></div>
-            <div>NET WORTH: <span id="net-worth-display" class="white-highlight" style="font-size: 16px; color: #fff; text-shadow: 0 0 5px #fff;">$8,000,000</span></div>
-            <div>LOCATION: <span id="location-display" class="white-highlight">Cayman Islands</span></div>
-        </div>
+        <div class="main-content">
+            <!-- TOP STATS BAR -->
+            <div class="top-stats">
+                <div class="stat-item">
+                    <span class="stat-label">CASH</span>
+                    <span id="cash-display" class="stat-value white-highlight">$10.00M</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">PERSONAL DEBT</span>
+                    <span id="debt-display" class="stat-value red-highlight">$2.00M</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">NET WORTH</span>
+                    <span id="net-worth-display" class="stat-value cyan-highlight">$8.00M</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">LOCATION</span>
+                    <span id="location-display" class="stat-value">Cayman Islands</span>
+                </div>
+            </div>
 
-        <!-- MAIN DASHBOARD -->
-        <div class="dashboard">
-            <!-- PORTFOLIO PANEL -->
-            <div class="panel">
-                <div class="panel-title">[ PORTFOLIO OF OWNED COMPANIES ]</div>
-                <div class="panel-content" id="portfolio-list">
+            <!-- DASHBOARD -->
+            <div class="dashboard">
+                <!-- PORTFOLIO -->
+                <div class="panel">
+                    <div class="panel-header">PORTFOLIO OF OWNED COMPANIES</div>
+                    <div class="panel-content" id="portfolio-list">
+                        <!-- Dynamic -->
+                    </div>
+                </div>
+
+                <!-- ACQUISITIONS -->
+                <div class="panel">
+                    <div class="panel-header">AVAILABLE TARGET ACQUISITIONS</div>
+                    <div class="panel-content" id="acquisitions-list">
+                        <!-- Dynamic -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- FINANCE & TRAVEL -->
+            <div class="finance-panel">
+                <div class="panel">
+                    <div class="panel-header">PERSONAL FINANCE & LEVERAGE</div>
+                    <div class="panel-content">
+                        <div style="font-size: 11px; margin-bottom: 5px;">
+                            Rate: <span id="interest-rate-text" class="red-highlight">10.0% / turn</span> | 
+                            Limit: <span id="credit-limit-text">$10.0M</span>
+                        </div>
+                        <div class="button-group">
+                            <button id="btn-borrow" onclick="borrowCash()">[B] Borrow $1M</button>
+                            <button id="btn-repay" onclick="repayDebt()">[P] Repay $1M</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">TRAVEL & TURN ADVANCE</div>
+                    <div class="panel-content">
+                        <div class="travel-group" id="travel-buttons">
+                            <!-- Dynamic buttons -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UPGRADES -->
+            <div class="panel" style="flex-shrink: 0;">
+                <div class="panel-header">REGULATORY SHIELDS & ASSETS</div>
+                <div class="panel-content" id="upgrades-status" style="display: flex; flex-wrap: wrap; gap: 10px; min-height: 20px;">
                     <!-- Dynamic -->
                 </div>
             </div>
 
-            <!-- ACQUISITIONS PANEL -->
-            <div class="panel">
-                <div class="panel-title">[ AVAILABLE TARGET ACQUISITIONS ]</div>
-                <div class="panel-content" id="acquisitions-list">
-                    <!-- Dynamic -->
+            <!-- LOG -->
+            <div class="log-panel">
+                <div class="log-header">SYSTEM ENGINE LOG</div>
+                <div class="log-container" id="log-container">
+                    <!-- Dynamic Log Lines -->
                 </div>
-            </div>
-        </div>
-
-        <!-- LOWER FINANCE & TRAVEL CONTROLS -->
-        <div class="finance-panel">
-            <!-- PERSONAL FINANCE ACTIONS -->
-            <div class="panel">
-                <div class="panel-title">[ PERSONAL FINANCE & LBO LEVERAGE ]</div>
-                <div class="panel-content" style="min-height: auto;">
-                    <p style="font-size: 12px; margin-bottom: 8px; color: rgba(57, 255, 20, 0.85);">
-                        Need liquidity to acquire larger targets? Draw cash from shadow debt markets, or repay your leverage to dodge high turn-based compound interest.
-                    </p>
-                    <div style="font-size: 13px; margin-bottom: 10px;">
-                        Current Personal Borrowing Rate: <span id="interest-rate-text" class="red-highlight">10.0% / turn</span>
-                        <br>
-                        Max Personal Credit Limit: <span id="credit-limit-text">$10.0M</span>
-                    </div>
-                    <div class="button-group">
-                        <button id="btn-borrow" onclick="borrowCash()">[B] Borrow $1.0M Cash</button>
-                        <button id="btn-repay" onclick="repayDebt()">[P] Repay $1.0M Debt</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TRAVEL / TURN ADVANCE -->
-            <div class="panel">
-                <div class="panel-title">[ TRAVEL & MARKET ARBITRAGE ]</div>
-                <div class="panel-content" style="min-height: auto;">
-                    <p style="font-size: 12px; margin-bottom: 8px; color: rgba(57, 255, 20, 0.85);">
-                        Traveling advances the <span class="white-highlight">Turn Counter</span>, accrues compound interest, triggers corporate operations cash flow, and refreshes local acquisitions and market valuations.
-                    </p>
-                    <div class="travel-group" id="travel-buttons">
-                        <!-- Dynamic buttons -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ACTIVE UPGRADES STATUS -->
-        <div class="panel" style="margin-bottom: 15px;">
-            <div class="panel-title">[ COMPROMISED ASSETS & REGULATORY SHIELDS ]</div>
-            <div style="display: flex; flex-wrap: wrap; gap: 15px; font-size: 12px; padding-top: 5px;" id="upgrades-status">
-                <!-- Dynamic status checks -->
-            </div>
-        </div>
-
-        <!-- TERMINAL LOG PANEL -->
-        <div class="log-panel">
-            <div style="background-color: var(--term-green-dark); color: var(--term-green); font-size: 11px; font-weight: bold; padding: 3px 12px; border-bottom: 1px solid var(--term-green);">
-                ======================[ ACTIVE SYSTEM ENGINE LOG ]======================
-            </div>
-            <div class="log-container" id="log-container">
-                <!-- Dynamic Log Lines -->
             </div>
         </div>
     </div>
@@ -487,99 +487,72 @@ __        _   _   | |     _____  _   _    ___    ___      __      __       _    
         <div class="modal-box">
             <div class="modal-header" id="modal-company-title">COMPANY_NAME</div>
             <div class="modal-body">
-                <p id="modal-company-desc" style="font-style: italic; margin-bottom: 12px; font-size: 12px; color: rgba(57, 255, 20, 0.8);"></p>
+                <p id="modal-company-desc" style="font-style: italic; margin-bottom: 8px; font-size: 11px; color: #888;"></p>
                 
                 <div class="stat-grid">
-                    <div class="stat-label">STATUS:</div>
+                    <div class="stat-label-modal">STATUS:</div>
                     <div id="modal-company-status" class="white-highlight">Operating</div>
                     
-                    <div class="stat-label">VIABILITY:</div>
+                    <div class="stat-label-modal">VIABILITY:</div>
                     <div id="modal-company-viability">85%</div>
                     
-                    <div class="stat-label">VALUATION:</div>
-                    <div id="modal-company-valuation" class="white-highlight">$6,200,000</div>
+                    <div class="stat-label-modal">VALUATION:</div>
+                    <div id="modal-company-valuation" class="white-highlight">$6.20M</div>
                     
-                    <div class="stat-label">PHYSICAL ASSETS:</div>
-                    <div id="modal-company-assets">$4,500,000</div>
+                    <div class="stat-label-modal">ASSETS:</div>
+                    <div id="modal-company-assets">$4.50M</div>
                     
-                    <div class="stat-label">COMPANY DEBT:</div>
-                    <div id="modal-company-debt" class="red-highlight">$1,000,000</div>
+                    <div class="stat-label-modal">DEBT:</div>
+                    <div id="modal-company-debt" class="red-highlight">$1.00M</div>
                     
-                    <div class="stat-label">OPERATING FLOW:</div>
-                    <div id="modal-company-profit">-$150,000/mo</div>
+                    <div class="stat-label-modal">OPERATING:</div>
+                    <div id="modal-company-profit">-$150k/turn</div>
                 </div>
 
                 <div class="modal-action-box">
-                    <div style="font-weight: bold; text-decoration: underline; margin-bottom: 8px;">CHOOSE FINANCIAL ACTION:</div>
-                    
-                    <div class="list-item" style="border-bottom: 1px dotted rgba(57,255,20,0.5);">
-                        <div class="list-item-details">
-                            <span class="white-highlight">[S] ASSET STRIP (SELL-AND-LEASEBACK)</span>
-                            <div style="font-size: 11px; color: rgba(57, 255, 20, 0.85); margin-top: 2px;">
-                                Sell off physical real estate to your personal holding company.
-                                <br><span style="color: #ff33ff;">Result: Receive 50% of Book Assets instantly. Viability -25%, Profit -150k/mo (due to rent).</span>
-                            </div>
+                    <div class="list-item">
+                        <div>
+                            <span class="white-highlight">ASSET STRIP</span>
+                            <div style="font-size: 10px; color: #888;">Yield: 50% Assets. Viability -25%.</div>
                         </div>
-                        <div class="list-item-action">
-                            <button id="btn-modal-strip" onclick="performStrip()">STRIP</button>
-                        </div>
+                        <button id="btn-modal-strip" onclick="performStrip()">STRIP</button>
                     </div>
 
-                    <div class="list-item" style="border-bottom: 1px dotted rgba(57,255,20,0.5);">
-                        <div class="list-item-details">
-                            <span class="white-highlight">[D] LEVERAGED DIVIDEND RECAP</span>
-                            <div style="font-size: 11px; color: rgba(57, 255, 20, 0.85); margin-top: 2px;">
-                                Force the company to issue high-yield bonds to pay you a dividend.
-                                <br><span style="color: #ffff33;">Result: Take cash equal to 50% of Valuation. Company Debt increases by same amount. Profit drops (debt servicing), Viability -15%.</span>
-                            </div>
+                    <div class="list-item">
+                        <div>
+                            <span class="white-highlight">DIVIDEND RECAP</span>
+                            <div style="font-size: 10px; color: #888;">Yield: 50% Val. Debt Spikes.</div>
                         </div>
-                        <div class="list-item-action">
-                            <button id="btn-modal-recap" onclick="performRecap()">RECAP</button>
-                        </div>
+                        <button id="btn-modal-recap" onclick="performRecap()">RECAP</button>
                     </div>
 
-                    <div class="list-item" style="border-bottom: 1px dotted rgba(57,255,20,0.5);">
-                        <div class="list-item-details">
-                            <span class="white-highlight">[C] "SYNERGY OPTIMIZATION" (COST CUTTING)</span>
-                            <div style="font-size: 11px; color: rgba(57, 255, 20, 0.85); margin-top: 2px;">
-                                Lay off 30% of employees, slash benefits, lower quality standards.
-                                <br><span style="color: #ff6600;">Result: Increases operating cash flow by +$150k/mo. Viability -10%, Heat +15% (worker backlash).</span>
-                            </div>
+                    <div class="list-item">
+                        <div>
+                            <span class="white-highlight">COST CUTTING</span>
+                            <div style="font-size: 10px; color: #888;">Yield: +$150k/turn. Heat +15%.</div>
                         </div>
-                        <div class="list-item-action">
-                            <button id="btn-modal-cut" onclick="performCut()">OPTIMIZE</button>
-                        </div>
+                        <button id="btn-modal-cut" onclick="performCut()">CUT</button>
                     </div>
 
-                    <div class="list-item" style="border-bottom: 1px dotted rgba(57,255,20,0.5);">
-                        <div class="list-item-details">
-                            <span class="white-highlight">[F] FLIP COMPANY (SELL TO MARKET)</span>
-                            <div style="font-size: 11px; color: rgba(57, 255, 20, 0.85); margin-top: 2px;">
-                                Unload company onto public markets, pension funds, or a dumber buyer.
-                                <br><span style="color: #33ff33;">Result: Collect (Valuation - Company Debt) as Personal Cash. Removes company from portfolio.</span>
-                            </div>
+                    <div class="list-item">
+                        <div>
+                            <span class="white-highlight">FLIP STAKE</span>
+                            <div style="font-size: 10px; color: #888;">Sell Equity to Market.</div>
                         </div>
-                        <div class="list-item-action">
-                            <button id="btn-modal-flip" onclick="performFlip()">FLIP</button>
-                        </div>
+                        <button id="btn-modal-flip" onclick="performFlip()">FLIP</button>
                     </div>
 
                     <div class="list-item" style="border-bottom: none;">
-                        <div class="list-item-details">
-                            <span class="white-highlight">[X] EXECUTE SEARS/CARVEOUT CHAPTER 11 LOOPHOLE</span>
-                            <div style="font-size: 11px; color: rgba(57, 255, 20, 0.85); margin-top: 2px;">
-                                Walk away from company debt completely. Wipe out public creditors, cancel pension obligations, and keep all stripped loot.
-                                <br><span style="color: #ff3333; font-weight: bold;">Result: Delete company from portfolio. Keep prior stripped cash. Heat +40%! (Warning: High Heat can trigger an immediate federal audit or union backlash).</span>
-                            </div>
+                        <div>
+                            <span class="red-highlight">CHAPTER 11 LOOPHOLE</span>
+                            <div style="font-size: 10px; color: #888;">Walk away. Heat +40%!</div>
                         </div>
-                        <div class="list-item-action">
-                            <button id="btn-modal-bankrupt" onclick="performBankrupt()">LOOPHOLE</button>
-                        </div>
+                        <button id="btn-modal-bankrupt" onclick="performBankrupt()">VOID</button>
                     </div>
                 </div>
             </div>
             <div class="modal-actions">
-                <button onclick="closeCompanyModal()">[E] Close Modal</button>
+                <button onclick="closeCompanyModal()">[E] CLOSE</button>
             </div>
         </div>
     </div>
