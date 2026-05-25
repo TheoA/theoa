@@ -228,7 +228,44 @@ function showEventModalFromEngine(eventData) {
         choices = [{ id: 'prepare', label: 'PREPARE FOR INFLATION SPIKE' }];
     }
 
-    showEventModal(title, text, choices, eventData.eventId);
+    // Pseudo-ack events: single choice that doesn't require real decision
+    const PSEUDO_ACK_CLASSIC = [
+        { eventId: 'sec_audit', choiceId: 'close' } // SEC with Justice Friend
+    ];
+
+    const PSEUDO_ACK_BREAKING = [
+        { eventId: 'union_strike', choiceId: 'bust' },
+        { eventId: 'assassination', choiceId: 'close' }, // with MercSec
+        { eventId: 'expose', choiceId: 'close' }, // without newspaper
+        { eventId: 'macro', choiceId: 'prepare' }
+    ];
+
+    const isPseudoAckClassic = PSEUDO_ACK_CLASSIC.some(p => p.eventId === eventData.eventId && choices.length === 1 && choices[0].id === p.choiceId);
+    const isPseudoAckBreaking = PSEUDO_ACK_BREAKING.some(p => p.eventId === eventData.eventId && choices.length === 1 && choices[0].id === p.choiceId);
+
+    if (isPseudoAckClassic || isPseudoAckBreaking) {
+        // Show toast and immediately resolve event
+        if (isPseudoAckClassic) {
+            showToast(title, text);
+        } else {
+            showBreakingToast(title, text);
+        }
+
+        engine.pendingCompanyId = eventData.targetCompanyId;
+        const result = engine.resolveEvent(eventData.eventId, choices[0].id);
+        if (result.gameOver) {
+            playBeep('gameover');
+            showGameOverModal(result);
+        } else if (result.messages) {
+            result.messages.forEach(m => {
+                showSimpleEventAlert(m.title, m.text, m.type);
+            });
+        }
+        pendingEventData = null;
+        updateUI();
+    } else {
+        showEventModal(title, text, choices, eventData.eventId);
+    }
 }
 
 function showEventModal(title, text, choices, eventId = null) {

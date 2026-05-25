@@ -1,0 +1,72 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: DOOMBERG TERMINAL v0.69
+      - generic [ref=e6]:
+        - generic [ref=e7] [cursor=pointer]: "[SOUND: ON]"
+        - generic [ref=e8]:
+          - generic [ref=e9]: "TURN: 01/30"
+          - generic [ref=e10]:
+            - generic [ref=e11]: "HEAT:"
+            - generic "Public and regulatory anger. Higher heat triggers worse events." [ref=e12]
+            - generic [ref=e14]: 20%
+  - generic [ref=e15]:
+    - generic [ref=e16]:
+      - generic [ref=e17]:
+        - generic [ref=e18]: CASH
+        - generic [ref=e19]: $9.32M
+      - generic [ref=e20]:
+        - generic [ref=e21]: PERSONAL DEBT
+        - generic [ref=e22]: $2.00M
+      - generic [ref=e23]:
+        - generic [ref=e24]: NET WORTH
+        - generic [ref=e25]: $7.94M
+      - generic [ref=e26]:
+        - generic [ref=e27]: LOCATION
+        - generic [ref=e28]: Cayman Islands
+    - generic [ref=e29]:
+      - generic [ref=e30]:
+        - generic [ref=e31]: Portfolio
+        - generic [ref=e78]:
+          - generic [ref=e79]:
+            - text: RadioShackled
+            - generic [ref=e80]:
+              - text: "Valuation: $918k | Company Debt: $300k | Viability: 40%"
+              - text: "Flow: -$50k/turn | Strip Assets: $800k"
+          - button "[MANAGE]" [ref=e82] [cursor=pointer]
+      - generic [ref=e34]:
+        - generic [ref=e35]: Available Target Acquisitions
+        - generic [ref=e83]:
+          - generic [ref=e84]:
+            - text: Red Lobotomy (Red Lobster)
+            - generic [ref=e85]:
+              - text: "Enterprise Value: $2.83M | Existing Debt: $2.00M"
+              - text: "Operating Yield: -$100k/turn"
+              - text: "Strippable Assets: $2.54M | Initial Viability: 60%"
+          - generic [ref=e86]:
+            - button "[BUY] CASH" [ref=e87] [cursor=pointer]
+            - button "[BUY] LEVERAGED" [ref=e88] [cursor=pointer]
+          - generic [ref=e89]:
+            - generic [ref=e90]: $909k
+            - generic [ref=e91]:
+              - text: $182k
+              - generic [ref=e92]: ($727k)
+    - generic [ref=e57]:
+      - generic [ref=e58]:
+        - generic [ref=e59]: Loans
+        - generic [ref=e60]:
+          - generic [ref=e61]: "Rate: 10.0% / turn | Limit: $10.0M"
+          - generic [ref=e62]:
+            - button "[B] Borrow $1M" [ref=e63] [cursor=pointer]
+            - button "[P] Repay $1M" [ref=e64] [cursor=pointer]
+      - generic [ref=e65]:
+        - generic [ref=e66]: Travel
+        - generic [ref=e68]:
+          - button "[1] Cayman Islands (HERE)" [disabled] [ref=e93] [cursor=pointer]
+          - button "[2] Wall Street (NYC)" [ref=e94] [cursor=pointer]
+          - button "[3] Silicon Valley" [ref=e95] [cursor=pointer]
+          - button "[4] Delaware" [ref=e96] [cursor=pointer]
+          - button "[5] London City" [ref=e97] [cursor=pointer]
+    - generic [ref=e74]:
+      - generic [ref=e75]: Notes
+      - generic [ref=e98]: "[ ] No active legal shields or bribed assets. You are fully exposed to audits and security events."

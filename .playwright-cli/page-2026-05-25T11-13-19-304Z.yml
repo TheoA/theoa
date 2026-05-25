@@ -1,0 +1,84 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: DOOMBERG TERMINAL v0.69
+      - generic [ref=e6]:
+        - generic [ref=e7] [cursor=pointer]: "[SOUND: ON]"
+        - generic [ref=e8]:
+          - generic [ref=e9]: "TURN: 01/30"
+          - generic [ref=e10]:
+            - generic [ref=e11]: "HEAT:"
+            - generic "Public and regulatory anger. Higher heat triggers worse events." [ref=e12]
+            - generic [ref=e14]: 20%
+  - generic [ref=e15]:
+    - generic [ref=e16]:
+      - generic [ref=e17]:
+        - generic [ref=e18]: CASH
+        - generic [ref=e19]: $10.00M
+      - generic [ref=e20]:
+        - generic [ref=e21]: PERSONAL DEBT
+        - generic [ref=e22]: $2.00M
+      - generic [ref=e23]:
+        - generic [ref=e24]: NET WORTH
+        - generic [ref=e25]: $8.00M
+      - generic [ref=e26]:
+        - generic [ref=e27]: LOCATION
+        - generic [ref=e28]: Cayman Islands
+    - generic [ref=e29]:
+      - generic [ref=e30]:
+        - generic [ref=e31]: Portfolio
+        - paragraph [ref=e33]:
+          - text: No companies currently in portfolio.
+          - text: Spend cash on Available Targets to execute leveraged buyouts.
+      - generic [ref=e34]:
+        - generic [ref=e35]: Available Target Acquisitions
+        - generic [ref=e36]:
+          - generic [ref=e37]:
+            - generic [ref=e38]:
+              - text: Searsly (Sears)
+              - generic [ref=e39]:
+                - text: "Enterprise Value: $4.15M | Existing Debt: $1.00M"
+                - text: "Operating Yield: -$150k/turn"
+                - text: "Strippable Assets: $3.73M | Initial Viability: 85%"
+            - generic [ref=e40]:
+              - button "[BUY] CASH" [ref=e41] [cursor=pointer]
+              - button "[BUY] LEVERAGED" [ref=e42] [cursor=pointer]
+            - generic [ref=e43]:
+              - generic [ref=e44]: $3.46M
+              - generic [ref=e45]:
+                - text: $693k
+                - generic [ref=e46]: ($2.77M)
+          - generic [ref=e47]:
+            - generic [ref=e48]:
+              - text: JC Penny-less (JCPenney)
+              - generic [ref=e49]:
+                - text: "Enterprise Value: $3.13M | Existing Debt: $1.80M"
+                - text: "Operating Yield: -$130k/turn"
+                - text: "Strippable Assets: $2.82M | Initial Viability: 65%"
+            - generic [ref=e50]:
+              - button "[BUY] CASH" [ref=e51] [cursor=pointer]
+              - button "[BUY] LEVERAGED" [ref=e52] [cursor=pointer]
+            - generic [ref=e53]:
+              - generic [ref=e54]: $1.47M
+              - generic [ref=e55]:
+                - text: $294k
+                - generic [ref=e56]: ($1.17M)
+    - generic [ref=e57]:
+      - generic [ref=e58]:
+        - generic [ref=e59]: Loans
+        - generic [ref=e60]:
+          - generic [ref=e61]: "Rate: 10.0% / turn | Limit: $10.0M"
+          - generic [ref=e62]:
+            - button "[B] Borrow $1M" [ref=e63] [cursor=pointer]
+            - button "[P] Repay $1M" [ref=e64] [cursor=pointer]
+      - generic [ref=e65]:
+        - generic [ref=e66]: Travel
+        - generic [ref=e68]:
+          - button "[1] Cayman Islands (HERE)" [disabled] [ref=e69] [cursor=pointer]
+          - button "[2] Wall Street (NYC)" [ref=e70] [cursor=pointer]
+          - button "[3] Silicon Valley" [ref=e71] [cursor=pointer]
+          - button "[4] Delaware" [ref=e72] [cursor=pointer]
+          - button "[5] London City" [ref=e73] [cursor=pointer]
+    - generic [ref=e74]:
+      - generic [ref=e75]: Notes
+      - generic [ref=e77]: "[ ] No active legal shields or bribed assets. You are fully exposed to audits and security events."

@@ -1,0 +1,6 @@
+[      59ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://localhost:8080/favicon.ico:0
+[   26274ms] [ERROR] Error in buyCompanyCash: TypeError: Cannot read properties of null (reading 'appendChild')
+    at addLog (http://localhost:8080/prototype.html:1030:23)
+    at buyCompanyCash (http://localhost:8080/prototype.html:1272:17)
+    at HTMLButtonElement.onclick (http://localhost:8080/prototype.html:1:1) @ http://localhost:8080/prototype.html:1275
+[   26330ms] [ERROR] Failed to load resource: the server responded with a status of 404 (File not found) @ http://localhost:8080/favicon.ico:0
