@@ -1017,20 +1017,6 @@
             else if (key === '5') travelTo('London City');
         }
 
-        // Add Line to Console Log
-        function addLog(text, className = '') {
-            const container = document.getElementById('log-container');
-            const line = document.createElement('div');
-            line.className = `log-line ${className}`;
-            
-            // Current turn prefix
-            const turnPrefix = `> [TURN ${String(game.turn).padStart(2, '0')}] `;
-            line.innerText = turnPrefix + text;
-            
-            container.appendChild(line);
-            container.scrollTop = container.scrollHeight;
-        }
-
         // Generate dynamic Acquisitions subset for a location
         function refreshLocalAcquisitions() {
             // Find unowned, unbankrupt, unsold companies
@@ -1084,37 +1070,35 @@
 
             const limit = game.upgrades.hasShellCorp ? 20000000 : 10000000;
             if (game.debt >= limit) {
-                addLog(`BORROW REJECTED: Shadow lending caps reached (${formatMoney(limit)}). Set up Shell Corp to expand leverage limit.`, 'bad-event');
+                showSimpleEventAlert("BORROW REJECTED", `Shadow lending caps reached (${formatMoney(limit)}). Set up Shell Corp to expand leverage limit.`);
                 return;
             }
 
             game.cash += 1000000;
             game.debt += 1000000;
-            addLog(`BORROW: Drew $1.0M cash under personal recourse. Total personal debt is now ${formatMoney(game.debt)}.`, 'system');
             updateUI();
         }
 
         function repayDebt() {
             playBeep('click');
             if (game.debt <= 0) {
-                addLog('REPAY REJECTED: Personal leverage is already zero.', 'system');
+                showSimpleEventAlert("REPAY REJECTED", "Personal leverage is already zero.");
                 return;
             }
             if (game.cash < 1000000) {
-                addLog('REPAY REJECTED: Insufficient cash. Liquidate assets, strip companies, or flip to secure $1.0M.', 'bad-event');
+                showSimpleEventAlert("REPAY REJECTED", "Insufficient cash. Liquidate assets, strip companies, or flip to secure $1.0M.");
                 return;
             }
 
             game.cash -= 1000000;
             game.debt -= 1000000;
-            addLog(`REPAY: Repaid $1.0M personal shadow debt. Remaining liability: ${formatMoney(game.debt)}.`, 'system');
             updateUI();
         }
 
         // TRAVEL / TRAVEL ENGINE
         function travelTo(locName) {
             if (game.location === locName) {
-                addLog(`TRAVEL: You are already in ${locName}. Select alternative target region to advance turns.`, 'system');
+                showSimpleEventAlert("TRAVEL", `You are already in ${locName}. Select alternative target region to advance turns.`);
                 return;
             }
 
@@ -1133,7 +1117,7 @@
             const interest = Math.round(game.debt * rate);
             if (interest > 0) {
                 game.debt += interest;
-                addLog(`INTEREST ACCRUED: Personal shadow debt accrued ${formatMoney(interest)} in interest (${(rate*100).toFixed(0)}% rate).`, 'bad-event');
+                showSimpleEventAlert("INTEREST ACCRUED", `Personal shadow debt accrued ${formatMoney(interest)} in interest (${(rate*100).toFixed(0)}% rate).`);
             }
 
             // 4. Accrue Owned Company Financials (Operating cash flow leaks / boosts)
@@ -1144,7 +1128,7 @@
                 if (game.strikeTurns[c.id] && game.strikeTurns[c.id] > 0) {
                     game.strikeTurns[c.id]--;
                     activeProfit -= 300000;
-                    addLog(`STRIKE ALERT: ${c.name} workers striking! Operations frozen, cash drainage: ${formatMoney(activeProfit)}/mo.`, 'bad-event');
+                    showSimpleEventAlert("STRIKE ALERT", `${c.name} workers striking! Operations frozen, cash drainage: ${formatMoney(activeProfit)}/mo.`);
                 }
 
                 if (activeProfit < 0) {
@@ -1156,11 +1140,11 @@
                     const viabilityCost = Math.ceil((drainage / c.baseValuation) * 20);
                     c.viability = Math.max(0, c.viability - viabilityCost);
                     
-                    addLog(`OPERATING REPORT: ${c.name} lost ${formatMoney(drainage)} in operations. Loaded onto company debt. Viability fell by ${viabilityCost}%.`, 'bad-event');
+                    showSimpleEventAlert("OPERATING REPORT", `${c.name} lost ${formatMoney(drainage)} in operations. Loaded onto company debt. Viability fell by ${viabilityCost}%.`);
                 } else {
                     // Positive operating profit is paid directly to your personal fund as a management/dividend fee!
                     game.cash += activeProfit;
-                    addLog(`OPERATING REPORT: Collected ${formatMoney(activeProfit)} management fee from profitable ${c.name}.`, 'success');
+                    showSimpleEventAlert("OPERATING REPORT", `Collected ${formatMoney(activeProfit)} management fee from profitable ${c.name}.`);
                 }
 
                 // If company viability hits 0%, it collapses in bankruptcy!
@@ -1184,8 +1168,6 @@
                 triggerPersonalBankruptcy();
                 return;
             }
-
-            addLog(`ARRIVED: Swung down in private jet at ${locName}. Market valuations refreshed.`, 'system');
 
             // 8. Event Roller Engine (Calculated on Heat probability)
             let eventTriggered = false;
@@ -1233,33 +1215,45 @@
             playBeep('alert');
             showSimpleEventAlert("PORTFOLIO COMPONENT BANKRUPTCY", 
                 `CRITICAL EXCEPTION: ${c.name} has declared Chapter 7 insolvency. Its operating viability hit 0% after severe financial engineering. All equity was wiped out. Workers' pensions have evaporated. Regulatory heat spikes!`);
-            
-            addLog(`COLLAPSE: ${c.name} went completely bankrupt! Outrage ensues. Heat +${finalHeatGain}%!`, 'bankrupt');
         }
 
         // ACQUIRE A TARGET - CASH
         function buyCompanyCash(companyId) {
-            playBeep('click');
-            const c = game.companies.find(comp => comp.id === companyId);
-            if (!c) return;
+            try {
+                playBeep('click');
+                const c = game.companies.find(comp => comp.id === companyId);
+                if (!c) {
+                    console.log('Company not found:', companyId);
+                    return;
+                }
 
-            const equityVal = Math.max(0, c.valuation - c.debt);
-            const fee = Math.round(equityVal * 0.10);
-            const totalCost = equityVal + fee;
+                const equityVal = Math.max(0, c.valuation - c.debt);
+                const fee = Math.round(equityVal * 0.10);
+                const totalCost = equityVal + fee;
 
-            if (game.cash < totalCost) {
-                showSimpleEventAlert("INSUFFICIENT CAPITAL", `You need ${formatMoney(totalCost)} cash (Equity: ${formatMoney(equityVal)} + 10% Goldman Sucks Fee: ${formatMoney(fee)}) to buy ${c.name}, but you only have ${formatMoney(game.cash)}. Press [B] to draw high-interest shadow leverage, or strip/flip other companies to generate liquidity!`);
-                return;
-            }
+                console.log('Buying:', c.name, 'totalCost:', totalCost, 'cash:', game.cash);
 
-            game.cash -= totalCost;
+                if (game.cash < totalCost) {
+                    showSimpleEventAlert("INSUFFICIENT CAPITAL", `You need ${formatMoney(totalCost)} cash (Equity: ${formatMoney(equityVal)} + 10% Goldman Sucks Fee: ${formatMoney(fee)}) to buy ${c.name}, but you only have ${formatMoney(game.cash)}. Press [B] to draw high-interest shadow leverage, or strip/flip other companies to generate liquidity!`);
+                    return;
+                }
+
+game.cash -= totalCost;
             c.isOwned = true;
-            
-            game.availableAcquisitions = game.availableAcquisitions.filter(comp => comp.id !== companyId);
 
-            addLog(`ACQUIRED: Purchased ${c.name} for ${formatMoney(totalCost)} personal cash (Equity Val: ${formatMoney(equityVal)}, Goldman Fee: ${formatMoney(fee)}). Loaded ${formatMoney(c.debt)} existing company debt onto its balance sheet.`, 'buy');
-            playBeep('success');
-            updateUI();
+            game.availableAcquisitions = game.availableAcquisitions.filter(comp => comp.id !== companyId);
+            
+            console.log('Purchase complete - checking state:');
+            console.log('  cash now:', game.cash);
+            console.log('  company isOwned:', c.isOwned);
+            console.log('  availableAcquisitions now:', game.availableAcquisitions.map(x => x.id));
+            console.log('  game.companies owned:', game.companies.filter(x => x.isOwned).map(x => x.id));
+
+                playBeep('success');
+                updateUI();
+            } catch(e) {
+                console.error('Error in buyCompanyCash:', e);
+            }
         }
 
         // ACQUIRE A TARGET - LEVERAGED (20% cash down, rest is company debt)
@@ -1285,7 +1279,6 @@
             
             game.availableAcquisitions = game.availableAcquisitions.filter(comp => comp.id !== companyId);
 
-            addLog(`ACQUIRED (LEVERAGED): Purchased ${c.name} with 20% cash down (${formatMoney(cashDown)}). Company took on ${formatMoney(newDebt)} new debt. Total loaded: ${formatMoney(c.debt)} company debt.`, 'buy');
             playBeep('success');
             updateUI();
         }
@@ -1398,18 +1391,20 @@
             // ACQUISITIONS RENDERING
             const acquisitionsContainer = document.getElementById('acquisitions-list');
             acquisitionsContainer.innerHTML = '';
-            
-            if (game.availableAcquisitions.length === 0) {
+
+            console.log('updateUI - availableAcquisitions:', game.availableAcquisitions.map(c => c.id + ':isOwned=' + c.isOwned));
+            const visibleAcquisitions = game.availableAcquisitions.filter(c => !c.isOwned);
+            console.log('updateUI - visibleAcquisitions:', visibleAcquisitions.map(c => c.id));
+            if (visibleAcquisitions.length === 0) {
                 acquisitionsContainer.innerHTML = '<p style="text-align: center; color: rgba(57, 255, 20, 0.4); padding-top: 40px;">No targets available in this hub.<br>Travel to alternate markets to scout fresh targets.</p>';
             } else {
-                game.availableAcquisitions.forEach(c => {
+                visibleAcquisitions.forEach(c => {
                     const item = document.createElement('div');
                     item.className = 'list-item';
                     
                     const equityVal = Math.max(0, c.valuation - c.debt);
                     const fee = Math.round(equityVal * 0.10);
                     const acqCost = equityVal + fee;
-                    const buyDisabled = game.cash < acqCost ? 'disabled' : '';
 
                     item.innerHTML = `
                         <div class="list-item-details">
@@ -1421,8 +1416,8 @@
                             </div>
                         </div>
                         <div class="acquisition-buttons">
-                            <button ${buyDisabled} onclick="buyCompanyCash('${c.id}')">[BUY] CASH</button>
-                            <button ${buyDisabled} onclick="buyCompanyLeveraged('${c.id}')">[BUY] LEVERAGED</button>
+                            <button onclick="buyCompanyCash('${c.id}')">[BUY] CASH</button>
+                            <button onclick="buyCompanyLeveraged('${c.id}')">[BUY] LEVERAGED</button>
                         </div>
                         <div class="acquisition-values">
                             <div class="acquisition-cost-row">${formatMoney(acqCost)}</div>
@@ -1502,7 +1497,6 @@
             // Valuation drops severely
             c.valuation = Math.max(0, Math.round(c.valuation * 0.55) - 500000);
 
-            addLog(`STRIP: Asset stripped ${c.name} real estate portfolio. Liquidated buildings for ${formatMoney(yieldAmt)} personal cash. Forced ${c.name} into long-term high-rate lease contracts. Operating cost spikes!`, 'strip');
             playBeep('success');
 
             if (c.viability <= 0) {
@@ -1532,7 +1526,6 @@
             const annualInterest = Math.round(recapAmt * 0.12);
             c.profit -= Math.round(annualInterest / 12);
 
-            addLog(`RECAP: Forced ${c.name} to borrow ${formatMoney(recapAmt)} in high-yield debt. Transferred the entire sum directly to your personal fund as a special dividend. Company loaded with leverage interest!`, 'recap');
             playBeep('success');
 
             if (c.viability <= 0) {
@@ -1562,7 +1555,6 @@
             const finalHeatGain = game.upgrades.bribedSenator ? Math.round(heatGain * 0.5) : heatGain;
             game.heat = Math.min(100, game.heat + finalHeatGain);
 
-            addLog(`OPTIMIZE: Conducted aggressive "Synergy Optimization" on ${c.name}. Fired 30% of employees and slashed pensions. Restored ${formatMoney(savings)}/turn in operating yield, but public backlash triggered heat (+${finalHeatGain}%).`, 'cut');
             playBeep('success');
 
             if (c.viability <= 0) {
@@ -1596,7 +1588,6 @@
             c.isOwned = false;
             c.isSold = true;
 
-            addLog(`FLIP: Sold your equity stake in ${c.name} back to public retail investors for ${formatMoney(netPayout)} net personal cash (Equity Val: ${formatMoney(equityVal)}, Goldman Sucks Transaction Fee: ${formatMoney(fee)}). Good luck to their mutual funds!`, 'success');
             playBeep('success');
             
             closeCompanyModal();
@@ -1616,8 +1607,6 @@
             const heatGain = 40;
             const finalHeatGain = game.upgrades.bribedSenator ? Math.round(heatGain * 0.5) : heatGain;
             game.heat = Math.min(100, game.heat + finalHeatGain);
-
-            addLog(`CHAPTER 11: Executed Sears/Carveout on ${c.name}. Vaporized creditors, walked away with stripped funds. Heat +${finalHeatGain}%!`, 'bankrupt');
             playBeep('alert');
             
             closeCompanyModal();
@@ -1627,7 +1616,6 @@
             if (game.heat > 75) {
                 const immediateThreat = Math.random() < 0.50;
                 if (immediateThreat) {
-                    addLog(`RISK THRESHOLD CRITICAL: High heat has provoked an immediate federal investigation or worker protest!`, 'bad-event');
                     setTimeout(() => {
                         triggerRandomBadEvent();
                         updateUI();
@@ -1687,7 +1675,6 @@
                     text += "<br><br><span style='color:#33ff33;'>IMMUNITY ACTIVATED: Your funded Supreme Court Justice 'friend' placed an informal call to the regional SEC enforcement office. The investigation is quietly dismissed.</span>";
                     showEventModal(title, text, [
                         { text: "CLOSE LAW BOOK AND LAUGH", action: () => {
-                            addLog("SEC AUDIT: Regulatory probe instantly quashed by your Supreme Court Justice asset.", "upgrade");
                             updateUI();
                         }}
                     ]);
@@ -1702,10 +1689,8 @@
                             action: () => {
                                 if (game.cash >= settlementCost) {
                                     game.cash -= settlementCost;
-                                    game.heat = 10; // Reset heat
-                                    addLog(`SEC AUDIT: Settled fraud case for ${formatMoney(settlementCost)} personal cash. Heat reset to 10%.`, 'bad-event');
+                                    game.heat = 10;
                                 } else {
-                                    addLog(`SEC AUDIT: Attempted to pay settlement, but personal cash was deficient. Handed to federal prosecutors!`, 'bad-event');
                                     triggerSECArrest();
                                 }
                                 updateUI();
@@ -1717,9 +1702,7 @@
                                 if (game.cash >= lawyerCost) {
                                     game.cash -= lawyerCost;
                                     game.heat = Math.min(100, game.heat + 30);
-                                    addLog(`SEC AUDIT: Engaged white-collar defense firm for ${formatMoney(lawyerCost)}. Case postponed. Heat +30%!`, 'bad-event');
                                 } else {
-                                    addLog(`SEC AUDIT: Attempted to hire lawyers, but cash was deficient. Detained at federal court!`, 'bad-event');
                                     triggerSECArrest();
                                 }
                                 updateUI();
@@ -1747,7 +1730,6 @@
                             targetComp.valuation = Math.round(targetComp.valuation * 0.5);
                             game.strikeTurns[targetComp.id] = 3;
                             game.heat = Math.min(100, game.heat + 15);
-                            addLog(`UNION STRIKE: Union strikers froze operations at ${targetComp.name}. Valuation halved. Operational yields tanked. Heat +15%.`, 'bad-event');
                             updateUI();
                         }
                     }
@@ -1763,7 +1745,6 @@
                     text += "<br><br><span style='color:#33ff33;'>IMMUNITY ACTIVATED: Your elite private mercenary bodyguards instantly return fire with tactical submachine guns. The assailant is neutralized. You sip your Macallan 25 year single-malt in complete safety.</span>";
                     showEventModal(title, text, [
                         { text: "WIPE A SPECK OF DUST OFF YOUR ARMANI", action: () => {
-                            addLog("ASSASSINATION THREAT: Retaliation neutralized by your tactical executive security detail.", "upgrade");
                             updateUI();
                         }}
                     ]);
@@ -1777,9 +1758,7 @@
                             action: () => {
                                 if (game.cash >= hospitalBill) {
                                     game.cash -= hospitalBill;
-                                    addLog(`ASSASSINATION THREAT: Hospitalized after union assassination attempt. Paid $2.0M in private surgery fees.`, 'bad-event');
                                 } else {
-                                    addLog(`ASSASSINATION THREAT: Shot and unable to afford premium hospital care! Underwent public health emergency treatment...`, 'bad-event');
                                     triggerAssassinationLoss();
                                 }
                                 updateUI();
@@ -1805,9 +1784,7 @@
                                 if (game.cash >= killStoryCost) {
                                     game.cash -= killStoryCost;
                                     game.heat = Math.max(0, game.heat - 15);
-                                    addLog(`EXPOSÉ KILLED: Used your newspaper asset to run smear campaign. Killed the investigative story. Heat -15%.`, 'upgrade');
                                 } else {
-                                    addLog(`EXPOSÉ SPIKE: Attempted to pay to kill the story, but cash was deficient. Story published!`, 'bad-event');
                                     applyExposeEffects();
                                 }
                                 updateUI();
@@ -1845,7 +1822,6 @@
                         text: "PREPARE FOR INFLATION SPIKE",
                         action: () => {
                             game.marketCrashTurns = 3;
-                            addLog("MACRO CRASH: Sovereign yield spikes froze capital. All company valuations marked down by 30% for 3 turns.", 'bad-event');
                             updateUI();
                         }
                     }
@@ -1858,7 +1834,6 @@
         function applyExposeEffects() {
             game.heat = Math.min(100, game.heat + 35);
             game.creditFreezeTurns = 3;
-            addLog("EXPOSÉ PUBLISHED: National newspaper called your LBO activities a 'vampire squid'. Heat +35%. Borrowing frozen for 3 turns.", 'bad-event');
         }
 
         // DYNAMIC OPPORTUNISTIC UPGRADES ROLLER
@@ -1885,10 +1860,7 @@
                         if (game.cash >= item.cost) {
                             game.cash -= item.cost;
                             game.upgrades[item.id] = true;
-                            addLog(`ASSET ACQUIRED: Completed funding for ${item.name}. Benefit activated permanently.`, 'upgrade');
                             playBeep('success');
-                        } else {
-                            addLog(`TRANSACTION FAILED: Cash reserves insufficient to clear transfer for ${item.name}.`, 'bad-event');
                         }
                         updateUI();
                     }
@@ -1896,7 +1868,6 @@
                 {
                     text: "DECLINE THE PROPOSAL",
                     action: () => {
-                        addLog(`OPPORTUNITY REJECTED: Decided to decline the proposal from the network representative.`, 'system');
                         updateUI();
                     }
                 }
