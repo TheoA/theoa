@@ -218,6 +218,43 @@
             background: #333;
         }
 
+        .acquisition-item {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .acquisition-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .acquisition-cost-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            color: #888;
+            white-space: nowrap;
+        }
+
+        .acquisition-cost-row.leveraged .acquisition-cost-value {
+            color: #fff;
+        }
+
+        .acquisition-cost-row .acquisition-cost-debt {
+            color: var(--bb-red);
+        }
+
+        .acquisition-values {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            text-align: right;
+        }
+
         .button-group {
             display: flex;
             flex-wrap: wrap;
@@ -1236,8 +1273,8 @@ __        _   _   | |     _____  _   _    ___    ___      __      __       _    
             addLog(`COLLAPSE: ${c.name} went completely bankrupt! Outrage ensues. Heat +${finalHeatGain}%!`, 'bankrupt');
         }
 
-        // ACQUIRE A TARGET
-        function buyCompany(companyId) {
+        // ACQUIRE A TARGET - CASH
+        function buyCompanyCash(companyId) {
             playBeep('click');
             const c = game.companies.find(comp => comp.id === companyId);
             if (!c) return;
@@ -1254,10 +1291,37 @@ __        _   _   | |     _____  _   _    ___    ___      __      __       _    
             game.cash -= totalCost;
             c.isOwned = true;
             
-            // Remove from available local acquisitions
             game.availableAcquisitions = game.availableAcquisitions.filter(comp => comp.id !== companyId);
 
             addLog(`ACQUIRED: Purchased ${c.name} for ${formatMoney(totalCost)} personal cash (Equity Val: ${formatMoney(equityVal)}, Goldman Fee: ${formatMoney(fee)}). Loaded ${formatMoney(c.debt)} existing company debt onto its balance sheet.`, 'buy');
+            playBeep('success');
+            updateUI();
+        }
+
+        // ACQUIRE A TARGET - LEVERAGED (20% cash down, rest is company debt)
+        function buyCompanyLeveraged(companyId) {
+            playBeep('click');
+            const c = game.companies.find(comp => comp.id === companyId);
+            if (!c) return;
+
+            const equityVal = Math.max(0, c.valuation - c.debt);
+            const fee = Math.round(equityVal * 0.10);
+            const totalCost = equityVal + fee;
+            const cashDown = Math.round(totalCost * 0.20);
+
+            if (game.cash < cashDown) {
+                showSimpleEventAlert("INSUFFICIENT CAPITAL", `You need ${formatMoney(cashDown)} cash (20% down payment) to leveraged-buy ${c.name}, but you only have ${formatMoney(game.cash)}. Press [B] to draw high-interest shadow leverage, or strip/flip other companies to generate liquidity!`);
+                return;
+            }
+
+            game.cash -= cashDown;
+            c.isOwned = true;
+            const newDebt = totalCost - cashDown;
+            c.debt += newDebt;
+            
+            game.availableAcquisitions = game.availableAcquisitions.filter(comp => comp.id !== companyId);
+
+            addLog(`ACQUIRED (LEVERAGED): Purchased ${c.name} with 20% cash down (${formatMoney(cashDown)}). Company took on ${formatMoney(newDebt)} new debt. Total loaded: ${formatMoney(c.debt)} company debt.`, 'buy');
             playBeep('success');
             updateUI();
         }
@@ -1387,14 +1451,20 @@ __        _   _   | |     _____  _   _    ___    ___      __      __       _    
                         <div class="list-item-details">
                             <span style="font-weight: bold; font-size:15px; color:#fff;">${c.name}</span> <span style="font-size:10px; color:rgba(57,255,20,0.6)">(${c.original})</span>
                             <div class="company-stats">
-                                Acquisition Cost (Equity + 10% IB Fee): <span class="white-highlight" style="text-decoration: underline;">${formatMoney(acqCost)}</span>
-                                <br>Enterprise Value: ${formatMoney(c.valuation)} | Existing Debt: ${formatMoney(c.debt)}
+                                Enterprise Value: ${formatMoney(c.valuation)} | Existing Debt: ${formatMoney(c.debt)}
                                 <br>Operating Yield: <span style="color: ${c.profit < 0 ? '#ff3333' : '#33ff33'}">${c.profit < 0 ? '' : '+'}${formatMoney(c.profit)}/turn</span>
                                 <br>Strippable Assets: ${formatMoney(c.assets)} | Initial Viability: ${c.viability}%
                             </div>
                         </div>
-                        <div class="list-item-action">
-                            <button ${buyDisabled} onclick="buyCompany('${c.id}')">BUY</button>
+                        <div class="acquisition-buttons">
+                            <button ${buyDisabled} onclick="buyCompanyCash('${c.id}')">[BUY] CASH</button>
+                            <button ${buyDisabled} onclick="buyCompanyLeveraged('${c.id}')">[BUY] LEVERAGED</button>
+                        </div>
+                        <div class="acquisition-values">
+                            <div class="acquisition-cost-row">${formatMoney(acqCost)}</div>
+                            <div class="acquisition-cost-row leveraged">
+                                ${formatMoney(Math.round(acqCost * 0.2))} <span class="acquisition-cost-debt">(${formatMoney(Math.round(acqCost * 0.8))})</span>
+                            </div>
                         </div>
                     `;
                     acquisitionsContainer.appendChild(item);
