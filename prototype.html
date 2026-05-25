@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DOOMBERG TERMINAL v0.69</title>
+    <title>Boomberg Terminal v0.69</title>
     <style>
         /* Bloomberg Terminal / Pro Finance Aesthetic Styling */
         :root {
@@ -72,6 +72,13 @@
             color: #000000;
             background-color: var(--bb-amber);
             padding: 8px 20px;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .terminal-title .version {
+            font-size: 11px;
         }
 
         .header-info-bar {
@@ -237,15 +244,21 @@
 
         .acquisition-item {
             display: grid;
-            grid-template-columns: 1fr auto auto;
+            grid-template-columns: 1fr minmax(130px, auto) minmax(100px, auto);
             gap: 12px;
-            align-items: center;
+            align-items: start;
         }
 
         .acquisition-buttons {
             display: flex;
             flex-direction: column;
             gap: 2px;
+            align-items: flex-start;
+        }
+
+        .acquisition-buttons button {
+            text-align: left;
+            line-height: 1.4;
         }
 
         .acquisition-cost-row {
@@ -255,6 +268,7 @@
             font-size: 10px;
             color: #888;
             white-space: nowrap;
+            line-height: 1.4;
         }
 
         .acquisition-cost-row.leveraged .acquisition-cost-value {
@@ -269,7 +283,8 @@
             display: flex;
             flex-direction: column;
             gap: 2px;
-            text-align: right;
+            text-align: left;
+            justify-content: flex-start;
         }
 
         .button-group {
@@ -394,7 +409,7 @@
         <!-- HEADER -->
         <header>
             <div class="header-title-row">
-                <span class="terminal-title">DOOMBERG TERMINAL v0.69</span>
+                <span class="terminal-title">Boomberg Terminal <span class="version">v0.69</span></span>
                 <div class="header-info-bar">
                     <div class="sound-toggle" id="sound-toggle" onclick="toggleSound()">[SOUND: ON]</div>
                     <div class="status-bar">
@@ -1400,7 +1415,7 @@ game.cash -= totalCost;
             } else {
                 visibleAcquisitions.forEach(c => {
                     const item = document.createElement('div');
-                    item.className = 'list-item';
+                    item.className = 'acquisition-item';
                     
                     const equityVal = Math.max(0, c.valuation - c.debt);
                     const fee = Math.round(equityVal * 0.10);
@@ -1408,7 +1423,7 @@ game.cash -= totalCost;
 
                     item.innerHTML = `
                         <div class="list-item-details">
-                            <span style="font-weight: bold; font-size:15px; color:#fff;">${c.name}</span> <span style="font-size:10px; color:rgba(57,255,20,0.6)">(${c.original})</span>
+                            <span style="font-weight: bold; font-size:15px; color:var(--bb-cyan);">${c.name}</span> <span style="font-size:10px; color:rgba(57,255,20,0.6)">(${c.original})</span>
                             <div class="company-stats">
                                 Enterprise Value: ${formatMoney(c.valuation)} | Existing Debt: ${formatMoney(c.debt)}
                                 <br>Operating Yield: <span style="color: ${c.profit < 0 ? '#ff3333' : '#33ff33'}">${c.profit < 0 ? '' : '+'}${formatMoney(c.profit)}/turn</span>
