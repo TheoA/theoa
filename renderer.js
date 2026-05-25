@@ -16,8 +16,6 @@ export function initRenderer() {
     const soundToggle = document.getElementById('sound-toggle');
     soundToggle.addEventListener('click', toggleSound);
 
-    document.addEventListener('keydown', handleKeyDown);
-
     engine.initGame();
     updateUI();
 }
@@ -99,46 +97,6 @@ function playBeep(type) {
     } catch (e) {
         console.warn("Web Audio API blocked or not supported:", e);
     }
-}
-
-function handleKeyDown(e) {
-    const companyModal = document.getElementById('company-modal');
-    const eventModal = document.getElementById('event-modal');
-
-    if (eventModal.classList.contains('active') && pendingEventData) {
-        const optionButtons = document.querySelectorAll('#event-actions button');
-        const keyNum = parseInt(e.key);
-        if (keyNum >= 1 && keyNum <= optionButtons.length) {
-            optionButtons[keyNum - 1].click();
-        }
-        return;
-    }
-
-    if (companyModal.classList.contains('active')) {
-        const key = e.key.toUpperCase();
-        if (key === 'S') doStrip();
-        else if (key === 'D') doRecap();
-        else if (key === 'C') doCut();
-        else if (key === 'F') doFlip();
-        else if (key === 'X') doBankrupt();
-        else if (key === 'E') closeCompanyModal();
-        return;
-    }
-
-    const key = e.key.toUpperCase();
-    if (key === 'B') {
-        playBeep('click');
-        const result = engine.borrowCash();
-        processResult(result);
-    } else if (key === 'P') {
-        playBeep('click');
-        const result = engine.repayDebt();
-        processResult(result);
-    } else if (key === '1') travelTo('Cayman Islands');
-    else if (key === '2') travelTo('Wall Street (NYC)');
-    else if (key === '3') travelTo('Silicon Valley');
-    else if (key === '4') travelTo('Delaware');
-    else if (key === '5') travelTo('London City');
 }
 
 function processResult(result) {
@@ -278,7 +236,7 @@ function showEventModal(title, text, choices, eventId = null) {
 
     choices.forEach((choice, index) => {
         const btn = document.createElement('button');
-        btn.innerHTML = `[${index + 1}] ${choice.label}`;
+        btn.innerHTML = ` ${choice.label}`;
         btn.onclick = () => {
             playBeep('click');
             closeEventModal();
@@ -395,7 +353,7 @@ function updateUI() {
     engine.getLocations().forEach((l, index) => {
         const btn = document.createElement('button');
         const shortcut = index + 1;
-        btn.innerHTML = `[${shortcut}] ${l.name}`;
+        btn.innerHTML = ` ${l.name}`;
         btn.title = l.desc;
 
         if (state.location === l.name) {
