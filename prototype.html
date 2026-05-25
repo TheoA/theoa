@@ -55,7 +55,16 @@
         header {
             border-bottom: 1px solid var(--bb-amber);
             padding: 4px 8px;
-            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+
+        .date-bar {
+            border-bottom: 1px solid var(--bb-amber);
+            padding: 4px 8px;
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--bb-amber);
+            text-align: center;
             flex-shrink: 0;
         }
 
@@ -469,7 +478,6 @@
                 <div class="header-info-bar">
                     <div class="sound-toggle" id="sound-toggle">[SOUND: ON]</div>
                     <div class="status-bar">
-                        <div>TURN: <span id="turn-display" class="white-highlight">01/30</span></div>
                         <div class="heat-bar-container">
                             <span>HEAT:</span>
                             <div class="heat-bar" title="Public and regulatory anger. Higher heat triggers worse events.">
@@ -481,6 +489,10 @@
                 </div>
             </div>
         </header>
+
+        <div class="date-bar">
+            <span id="date-bar-display">June 2026 (Q1) - turn 01/30</span>
+        </div>
 
         <div class="main-content">
             <!-- TOP STATS BAR -->

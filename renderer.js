@@ -1,6 +1,8 @@
 import { createEngine } from './engine.js';
 import { showToast, showBreakingToast, initToastContainers } from './components/toast.js';
 
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
 let audioCtx = null;
 let soundEnabled = true;
 let engine = null;
@@ -324,7 +326,13 @@ function showGameOverModal(result) {
 function updateUI() {
     const state = engine.getState();
 
-    document.getElementById('turn-display').innerText = `${String(state.turn).padStart(2, '0')}/${30}`;
+    const totalMonths = state.gameStartMonth + state.turn - 1;
+    const currentMonth = totalMonths % 12;
+    const currentYear = state.gameStartYear + Math.floor(totalMonths / 12);
+    const quarter = Math.ceil((currentMonth + 1) / 3);
+    const monthName = MONTHS[currentMonth];
+    document.getElementById('date-bar-display').innerText = `${monthName} ${currentYear} (Q${quarter}) - turn ${String(state.turn).padStart(2, '0')}/30`;
+
     document.getElementById('cash-display').innerText = engine.formatMoney(state.cash);
 
     const debtDisplay = document.getElementById('debt-display');
@@ -443,8 +451,8 @@ function updateUI() {
                     </div>
                 </div>
                 <div class="acquisition-buttons">
-                    <button onclick="buyCompanyCash('${c.id}')">[BUY] CASH</button>
-                    <button onclick="buyCompanyLeveraged('${c.id}')">[BUY] LEVERAGED</button>
+                    <button onclick="buyCompanyCash('${c.id}')">CASH BUYOUT</button>
+                    <button onclick="buyCompanyLeveraged('${c.id}')">LEVERAGED BUYOUT</button>
                 </div>
                 <div class="acquisition-values">
                     <div class="acquisition-cost-row">${engine.formatMoney(acqCost)}</div>

@@ -7,12 +7,15 @@ export function createEngine() {
     let state = createInitialState();
 
     function createInitialState() {
+        const now = new Date();
         return {
             cash: config.initialCash,
             debt: config.initialDebt,
             heat: config.initialHeat,
             location: 'Cayman Islands',
             turn: 1,
+            gameStartMonth: now.getMonth(),
+            gameStartYear: now.getFullYear(),
             marketCrashTurns: 0,
             creditFreezeTurns: 0,
             strikeTurns: {},
