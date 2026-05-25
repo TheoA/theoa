@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VULTURE TERMINAL 1000</title>
+    <title>DOOMBERG TERMINAL v0.69</title>
     <style>
         /* Bloomberg Terminal / Pro Finance Aesthetic Styling */
         :root {
@@ -59,23 +59,40 @@
             flex-shrink: 0;
         }
 
-        .ascii-logo {
-            font-size: 6px;
-            line-height: 1;
-            white-space: pre;
-            margin-bottom: 5px;
-            letter-spacing: -1px;
-            overflow: hidden;
-            color: var(--bb-amber);
+        .header-title-row {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+
+        .terminal-title {
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #000000;
+            background-color: var(--bb-amber);
+            padding: 8px 20px;
+        }
+
+        .header-info-bar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background-color: #000000;
+            color: var(--bb-white);
+            padding: 8px 15px;
+            flex: 1;
+        }
+
+        .header-info-bar .white-highlight {
+            color: var(--bb-white);
         }
 
         .status-bar {
             display: flex;
-            justify-content: space-between;
             align-items: center;
             gap: 15px;
             font-weight: bold;
-            padding: 2px 0;
             font-size: 11px;
         }
 
@@ -85,7 +102,7 @@
         }
 
         .heat-bar {
-            border: 1px solid var(--bb-amber);
+            border: 1px solid var(--bb-white);
             width: 100px;
             height: 10px;
             margin-left: 5px;
@@ -155,8 +172,8 @@
         }
 
         .panel-header {
-            background-color: var(--bb-amber-dark);
-            color: var(--bb-amber);
+            background-color: #333333;
+            color: var(--bb-white);
             padding: 2px 8px;
             font-weight: bold;
             font-size: 11px;
@@ -281,41 +298,7 @@
             }
         }
 
-        /* Log Panel styling */
-        .log-panel {
-            border: 1px solid var(--border-color);
-            background-color: #000;
-            flex-shrink: 0;
-        }
 
-        .log-header {
-            background-color: #1a1a1a;
-            color: #888;
-            font-size: 10px;
-            padding: 2px 8px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .log-container {
-            height: 100px;
-            overflow-y: auto;
-            padding: 4px 8px;
-            font-size: 11px;
-        }
-
-        .log-line {
-            margin-bottom: 2px;
-        }
-
-        .log-line.system { color: var(--bb-white); }
-        .log-line.buy { color: var(--bb-cyan); }
-        .log-line.strip { color: #ff00ff; }
-        .log-line.recap { color: #ffff00; }
-        .log-line.cut { color: #ff6600; }
-        .log-line.bankrupt { color: var(--bb-red); }
-        .log-line.success { color: var(--bb-green); }
-        .log-line.bad-event { color: var(--bb-red); font-weight: bold; }
-        .log-line.upgrade { color: var(--bb-cyan); font-weight: bold; }
 
         /* Dialog/Modal Overlays */
         .modal-overlay {
@@ -375,13 +358,11 @@
 
         /* Sound Control Switch */
         .sound-toggle {
-            float: right;
             font-size: 10px;
-            border: 1px solid #444;
+            border: 1px solid var(--bb-white);
             padding: 0 4px;
             cursor: pointer;
-            margin-top: -2px;
-            color: #888;
+            color: var(--bb-white);
         }
         .sound-toggle:hover {
             color: var(--bb-amber);
@@ -412,23 +393,20 @@
     <div class="crt-container">
         <!-- HEADER -->
         <header>
-            <div class="sound-toggle" id="sound-toggle" onclick="toggleSound()">[SOUND: ON]</div>
-            <div class="ascii-logo">
-__        _   _   | |     _____  _   _    ___    ___      __      __       _       ___         ___        
-\ \    / /| | | | | |    |_   _|| | | |  | _ \  | __|     \ \    / /      /_\     | _ \       / __|       
- \ \  / / | |_| | | |___   | |  | |_| |  |   /  | _|       \ \/\/ /      / _ \    |   /       \__ \       
-  \_\/_/   \___/  |_____|  |_|   \___/   |_|_\  |___|       \_/\_/      /_/ \_\   |_|_\       |___/       
-            </div>
-            
-            <div class="status-bar">
-                <div>SYSTEM: <span class="white-highlight">VULTURE TERMINAL 1000</span></div>
-                <div>TURN: <span id="turn-display" class="white-highlight">01/30</span></div>
-                <div class="heat-bar-container">
-                    <span>HEAT:</span>
-                    <div class="heat-bar" title="Public and regulatory anger. Higher heat triggers worse events.">
-                        <div class="heat-bar-fill" id="heat-fill" style="width: 20%;"></div>
+            <div class="header-title-row">
+                <span class="terminal-title">DOOMBERG TERMINAL v0.69</span>
+                <div class="header-info-bar">
+                    <div class="sound-toggle" id="sound-toggle" onclick="toggleSound()">[SOUND: ON]</div>
+                    <div class="status-bar">
+                        <div>TURN: <span id="turn-display" class="white-highlight">01/30</span></div>
+                        <div class="heat-bar-container">
+                            <span>HEAT:</span>
+                            <div class="heat-bar" title="Public and regulatory anger. Higher heat triggers worse events.">
+                                <div class="heat-bar-fill" id="heat-fill" style="width: 20%;"></div>
+                            </div>
+                            <span id="heat-text" style="margin-left: 8px;">20%</span>
+                        </div>
                     </div>
-                    <span id="heat-text" style="margin-left: 8px;">20%</span>
                 </div>
             </div>
         </header>
@@ -458,7 +436,7 @@ __        _   _   | |     _____  _   _    ___    ___      __      __       _    
             <div class="dashboard">
                 <!-- PORTFOLIO -->
                 <div class="panel">
-                    <div class="panel-header">PORTFOLIO OF OWNED COMPANIES</div>
+                    <div class="panel-header">Portfolio</div>
                     <div class="panel-content" id="portfolio-list">
                         <!-- Dynamic -->
                     </div>
@@ -466,7 +444,7 @@ __        _   _   | |     _____  _   _    ___    ___      __      __       _    
 
                 <!-- ACQUISITIONS -->
                 <div class="panel">
-                    <div class="panel-header">AVAILABLE TARGET ACQUISITIONS</div>
+                    <div class="panel-header">Available Target Acquisitions</div>
                     <div class="panel-content" id="acquisitions-list">
                         <!-- Dynamic -->
                     </div>
@@ -476,7 +454,7 @@ __        _   _   | |     _____  _   _    ___    ___      __      __       _    
             <!-- FINANCE & TRAVEL -->
             <div class="finance-panel">
                 <div class="panel">
-                    <div class="panel-header">PERSONAL FINANCE & LEVERAGE</div>
+                    <div class="panel-header">Loans</div>
                     <div class="panel-content">
                         <div style="font-size: 11px; margin-bottom: 5px;">
                             Rate: <span id="interest-rate-text" class="red-highlight">10.0% / turn</span> | 
@@ -490,7 +468,7 @@ __        _   _   | |     _____  _   _    ___    ___      __      __       _    
                 </div>
 
                 <div class="panel">
-                    <div class="panel-header">TRAVEL & TURN ADVANCE</div>
+                    <div class="panel-header">Travel</div>
                     <div class="panel-content">
                         <div class="travel-group" id="travel-buttons">
                             <!-- Dynamic buttons -->
@@ -501,19 +479,12 @@ __        _   _   | |     _____  _   _    ___    ___      __      __       _    
 
             <!-- UPGRADES -->
             <div class="panel" style="flex-shrink: 0;">
-                <div class="panel-header">REGULATORY SHIELDS & ASSETS</div>
+                <div class="panel-header">Notes</div>
                 <div class="panel-content" id="upgrades-status" style="display: flex; flex-wrap: wrap; gap: 10px; min-height: 20px;">
                     <!-- Dynamic -->
                 </div>
             </div>
 
-            <!-- LOG -->
-            <div class="log-panel">
-                <div class="log-header">SYSTEM ENGINE LOG</div>
-                <div class="log-container" id="log-container">
-                    <!-- Dynamic Log Lines -->
-                </div>
-            </div>
         </div>
     </div>
 
@@ -998,14 +969,7 @@ __        _   _   | |     _____  _   _    ___    ___      __      __       _    
             // Initial Acquisitions Pool
             refreshLocalAcquisitions();
 
-            // Clear Log
-            const container = document.getElementById('log-container');
-            container.innerHTML = '';
-            
-            addLog('SYSTEM: Vulture Terminal 1000 boot sequence initiated...', 'system');
-            addLog('SYSTEM: Managing Partner authorized. Personal balance: $10.0M cash, $2.0M initial shadow debt.', 'system');
-            addLog('SYSTEM: Objective: Strip and flip targets, maximize Net Worth over 30 turns. Avoid regulatory or physical termination.', 'system');
-            addLog('TIP: Click into "Searsly" or "Red Lobotomy" once purchased to begin asset stripping operations!', 'system');
+
 
             updateUI();
             
