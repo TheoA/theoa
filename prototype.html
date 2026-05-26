@@ -18,6 +18,15 @@
             --panel-bg: #0a0a0a;
             --border-color: #333333;
             --font-stack: "Consolas", "Monaco", "Lucida Console", "Courier New", monospace;
+            --bg: #000000;
+            --surface: #0a0a0a;
+            --border: #333333;
+            --muted: #888888;
+            --fg: #ff9900;
+            --accent: #ff9900;
+            --accent2: #00ffff;
+            --success: #00ff00;
+            --danger: #ff0000;
         }
 
         * {
@@ -251,49 +260,114 @@
             background: #333;
         }
 
-        .acquisition-item {
-            display: grid;
-            grid-template-columns: 1fr minmax(130px, auto) minmax(100px, auto);
-            gap: 12px;
-            align-items: start;
+        .company-panel {
+            border: none;
+            background: var(--surface);
+            padding: 10px;
+            margin-bottom: 10px;
         }
 
-        .acquisition-buttons {
+        .company-header {
             display: flex;
-            flex-direction: column;
-            gap: 2px;
+            justify-content: space-between;
             align-items: flex-start;
+            margin-bottom: 6px;
         }
 
-        .acquisition-buttons button {
-            text-align: left;
-            line-height: 1.4;
+        .company-name {
+            font-weight: bold;
+            font-size: 15px;
+            color: var(--accent);
+            cursor: pointer;
         }
 
-        .acquisition-cost-row {
-            display: flex;
-            align-items: center;
-            gap: 4px;
+        .company-name:hover {
+            background-color: var(--accent);
+            color: var(--bg);
+        }
+
+        .company-ticker {
             font-size: 10px;
-            color: #888;
-            white-space: nowrap;
-            line-height: 1.4;
+            color: var(--muted);
+            margin-top: 2px;
         }
 
-        .acquisition-cost-row.leveraged .acquisition-cost-value {
+        .viability {
+            font-size: 12px;
+            color: var(--success);
+            font-weight: bold;
+            border: 1px solid var(--success);
+            padding: 2px 6px;
+        }
+
+        .metrics {
+            font-size: 11px;
             color: #fff;
+            margin-bottom: 8px;
         }
 
-        .acquisition-cost-row .acquisition-cost-debt {
-            color: var(--bb-red);
+        .metrics .neg {
+            color: var(--danger);
         }
 
-        .acquisition-values {
+        .btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            position: relative;
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            background: #222;
+            border: 1px solid var(--border);
+            padding: 8px 10px 8px 14px;
             text-align: left;
-            justify-content: flex-start;
+            font-family: var(--font-stack);
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+        }
+
+        .btn-cash::before { background: var(--success); }
+        .btn-lev::before { background: var(--accent2); }
+
+        .btn-action {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        .btn-price {
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 1.1;
+        }
+
+        .btn-cash .btn-price { color: var(--success); }
+        .btn-lev .btn-price { color: var(--accent2); }
+
+        .btn-debt {
+            font-size: 10px;
+            color: var(--danger);
+            margin-top: 2px;
+        }
+
+        .btn-note {
+            font-size: 9px;
+            color: var(--muted);
+            margin-top: 2px;
         }
 
         .button-group {

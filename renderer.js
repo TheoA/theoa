@@ -434,34 +434,39 @@ function updateUI() {
         acquisitionsContainer.innerHTML = '<p style="text-align: center; color: rgba(57, 255, 20, 0.4); padding-top: 40px;">No targets available in this hub.<br>Travel to alternate markets to scout fresh targets.</p>';
     } else {
         visibleAcquisitions.forEach(c => {
-            const item = document.createElement('div');
-            item.className = 'acquisition-item';
-
             const equityVal = Math.max(0, c.valuation - c.debt);
             const fee = Math.round(equityVal * 0.10);
             const acqCost = equityVal + fee;
+            const leveragedDown = Math.round(acqCost * 0.2);
+            const leveragedDebt = Math.round(acqCost * 0.8);
+            const profitClass = c.profit < 0 ? 'neg' : '';
 
-            item.innerHTML = `
-                <div class="list-item-details">
-                    <span style="font-weight: bold; font-size:15px; color:var(--bb-cyan);">${c.name}</span> <span style="font-size:10px; color:rgba(57,255,20,0.6)">(${c.original})</span>
-                    <div class="company-stats">
-                        Enterprise Value: ${engine.formatMoney(c.valuation)} | Existing Debt: ${engine.formatMoney(c.debt)}
-                        <br>Operating Yield: <span style="color: ${c.profit < 0 ? '#ff3333' : '#33ff33'}">${c.profit < 0 ? '' : '+'}${engine.formatMoney(c.profit)}/turn</span>
-                        <br>Strippable Assets: ${engine.formatMoney(c.assets)} | Initial Viability: ${c.viability}%
+            acquisitionsContainer.innerHTML += `
+                <div class="company-panel">
+                    <div class="company-header">
+                        <div>
+                            <div class="company-name">${c.name}</div>
+                            <div class="company-ticker">${c.original}</div>
+                        </div>
+                        <div class="viability">${c.viability}%</div>
                     </div>
-                </div>
-                <div class="acquisition-buttons">
-                    <button onclick="buyCompanyCash('${c.id}')">CASH BUYOUT</button>
-                    <button onclick="buyCompanyLeveraged('${c.id}')">LEVERAGED BUYOUT</button>
-                </div>
-                <div class="acquisition-values">
-                    <div class="acquisition-cost-row">${engine.formatMoney(acqCost)}</div>
-                    <div class="acquisition-cost-row leveraged">
-                        ${engine.formatMoney(Math.round(acqCost * 0.2))} <span class="acquisition-cost-debt">(${engine.formatMoney(Math.round(acqCost * 0.8))})</span>
+                    <div class="metrics">
+                        EV ${engine.formatMoney(c.valuation)} · Debt ${engine.formatMoney(c.debt)} · Assets ${engine.formatMoney(c.assets)} · <span class="${profitClass}">${c.profit < 0 ? '' : '+'}${engine.formatMoney(c.profit)}/turn</span>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn btn-cash" onclick="buyCompanyCash('${c.id}')">
+                            <span class="btn-action">BUY CASH</span>
+                            <span class="btn-price">${engine.formatMoney(acqCost)}</span>
+                            <span class="btn-note">full price</span>
+                        </button>
+                        <button class="btn btn-lev" onclick="buyCompanyLeveraged('${c.id}')">
+                            <span class="btn-action">BUY LEVERAGED</span>
+                            <span class="btn-price">${engine.formatMoney(leveragedDown)}</span>
+                            <span class="btn-debt">+ ${engine.formatMoney(leveragedDebt)} debt</span>
+                        </button>
                     </div>
                 </div>
             `;
-            acquisitionsContainer.appendChild(item);
         });
     }
 }
