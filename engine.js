@@ -36,7 +36,8 @@ export function createEngine() {
                 isCostCut: false,
                 valuation: c.baseValuation
             })),
-            availableAcquisitions: []
+            availableAcquisitions: [],
+            hasHadFirstCompanyPurchase: false
         };
     }
 
@@ -131,6 +132,11 @@ export function createEngine() {
 
         const heatGain = applyHeatGain(config.autoBankruptcyHeatGain);
         state.heat = Math.min(100, state.heat + heatGain);
+
+        const anyOwned = state.companies.some(comp => comp.isOwned);
+        if (!anyOwned) {
+            state.hasHadFirstCompanyPurchase = false;
+        }
     }
 
     function triggerPersonalBankruptcy() {
@@ -358,7 +364,13 @@ export function createEngine() {
         state.cash -= totalCost;
         c.isOwned = true;
         state.availableAcquisitions = state.availableAcquisitions.filter(comp => comp.id !== companyId);
-        messages.push(msg('cash_loss', 'ACQUIRED', `Bought ${c.name} for ${formatMoney(totalCost)} (equity ${formatMoney(equityVal)} + fee).`, { cash: -totalCost }));
+        
+        if (!state.hasHadFirstCompanyPurchase) {
+            state.hasHadFirstCompanyPurchase = true;
+            messages.push(msg('alert', 'BREAKING', `${c.name} bought out by new private equity sensation`, { cash: -totalCost }));
+        } else {
+            messages.push(msg('cash_loss', 'ACQUIRED', `Bought ${c.name} for ${formatMoney(totalCost)} (equity ${formatMoney(equityVal)} + fee).`, { cash: -totalCost }));
+        }
 
         return { messages };
     }
@@ -385,7 +397,13 @@ export function createEngine() {
         c.isOwned = true;
         c.debt += (totalCost - cashDown);
         state.availableAcquisitions = state.availableAcquisitions.filter(comp => comp.id !== companyId);
-        messages.push(msg('cash_loss', 'ACQUIRED (LBO)', `Leverage bought ${c.name}. Down payment ${formatMoney(cashDown)}, company debt loaded: ${formatMoney(totalCost - cashDown)}.`, { cash: -cashDown }));
+        
+        if (!state.hasHadFirstCompanyPurchase) {
+            state.hasHadFirstCompanyPurchase = true;
+            messages.push(msg('alert', 'BREAKING', `${c.name} bought out by new private equity sensation`, { cash: -cashDown }));
+        } else {
+            messages.push(msg('cash_loss', 'ACQUIRED (LBO)', `Leverage bought ${c.name}. Down payment ${formatMoney(cashDown)}, company debt loaded: ${formatMoney(totalCost - cashDown)}.`, { cash: -cashDown }));
+        }
 
         return { messages };
     }
@@ -600,6 +618,11 @@ export function createEngine() {
         c.isOwned = false;
         c.isSold = true;
 
+        const anyOwned = state.companies.some(comp => comp.isOwned);
+        if (!anyOwned) {
+            state.hasHadFirstCompanyPurchase = false;
+        }
+
         messages.push(msg('cash_gain', 'FLIPPED', `Sold ${c.name} for ${formatMoney(netPayout)} (equity ${formatMoney(equityVal)} - ${formatMoney(fee)} fee).`, { cash: +netPayout }));
 
         return { messages };
@@ -618,6 +641,11 @@ export function createEngine() {
 
         const heatGain = applyHeatGain(config.bankruptHeatGain);
         state.heat = Math.min(100, state.heat + heatGain);
+
+        const anyOwned = state.companies.some(comp => comp.isOwned);
+        if (!anyOwned) {
+            state.hasHadFirstCompanyPurchase = false;
+        }
 
         messages.push(msg('alert', 'CHAPTER 11', `Voided ${c.name} via bankruptcy loophole. Heat +${heatGain}%.`, { heat: +heatGain }));
 

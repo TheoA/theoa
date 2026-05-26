@@ -501,22 +501,39 @@
         }
 
         .breaking-toast {
-            background-color: var(--bb-red);
-            color: var(--bb-white);
-            padding: 8px 15px;
-            font-size: 12px;
-            text-align: center;
+            display: flex;
+            align-items: stretch;
+            background-color: var(--bb-white);
             border-bottom: 2px solid var(--bb-amber);
+            animation: wipe-reveal 0.5s ease-out forwards;
         }
 
         .breaking-label {
+            background-color: var(--bb-red);
+            color: var(--bb-white);
+            font-size: 28px;
             font-weight: bold;
-            color: var(--bb-amber);
+            padding: 10px 15px;
+            text-transform: uppercase;
+            white-space: nowrap;
         }
 
         .breaking-text {
-            font-size: 11px;
-            color: #ddd;
+            flex: 1;
+            background-color: var(--bb-white);
+            color: #000000;
+            font-size: 14px;
+            padding: 10px 15px;
+        }
+
+        @keyframes wipe-reveal {
+            0% { clip-path: inset(0 100% 0 0); }
+            100% { clip-path: inset(0 0 0 0); }
+        }
+
+        @keyframes wipe-out {
+            0% { clip-path: inset(0 0 0 0); }
+            100% { clip-path: inset(0 0 0 100%); }
         }
 
         #toast-container {

@@ -21,14 +21,17 @@ export function showBreakingToast(title, text) {
     breakingContainer.innerHTML = '';
     const toast = document.createElement('div');
     toast.className = 'breaking-toast';
-    toast.innerHTML = `<span class="breaking-label">BREAKING:</span> ${title}<br><span class="breaking-text">${text}</span>`;
+    toast.innerHTML = `<span class="breaking-label">BREAKING</span><span class="breaking-text">${title}<br>${text}</span>`;
     breakingContainer.appendChild(toast);
     breakingContainer.classList.add('has-toast');
 
     breakingTimer = setTimeout(() => {
-        breakingContainer.innerHTML = '';
-        breakingContainer.classList.remove('has-toast');
-        breakingTimer = null;
+        toast.style.animation = 'wipe-out 0.4s ease-in forwards';
+        toast.addEventListener('animationend', () => {
+            breakingContainer.innerHTML = '';
+            breakingContainer.classList.remove('has-toast');
+            breakingTimer = null;
+        });
     }, 5000);
 }
 
