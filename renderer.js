@@ -425,7 +425,7 @@ function updateUI() {
                 <div class="list-item-details">
                     <span class="company-name" onclick="openCompanyModal('${c.id}')">${c.name}</span>${strikeLabel}
                     <div class="company-stats">
-                        Valuation: ${engine.formatMoney(c.valuation)} | Company Debt: ${engine.formatMoney(c.debt)} | Viability: ${c.viability}%
+                        Valuation: ${engine.formatMoney(c.valuation)} | Company Debt: ${engine.formatMoney(c.debt)} | Viability: ${engine.getViabilityRating(c.viability)}
                         <br>Flow: <span style="color: ${c.profit < 0 ? '#ff3333' : '#33ff33'}">${c.profit < 0 ? '' : '+'}${engine.formatMoney(c.profit)}/turn</span> | Strip Assets: ${engine.formatMoney(c.assets)}
                     </div>
                 </div>
@@ -458,9 +458,9 @@ function updateUI() {
                     <div class="company-header">
                         <div>
                             <div class="company-name">${c.name}</div>
-                            <div class="company-ticker">${c.original}</div>
+                            <div class="company-ticker">${c.description}</div>
                         </div>
-                        <div class="viability">${c.viability}%</div>
+                        <div class="viability ${engine.getViabilityRatingClass(c.viability)}">${engine.getViabilityRating(c.viability)}</div>
                     </div>
                     <div class="metrics">
                         EV ${engine.formatMoney(c.valuation)} · Debt ${engine.formatMoney(c.debt)} · Assets ${engine.formatMoney(c.assets)} · <span class="${profitClass}">${c.profit < 0 ? '' : '+'}${engine.formatMoney(c.profit)}/turn</span>
@@ -493,8 +493,8 @@ window.openCompanyModal = function(companyId) {
     document.getElementById('modal-company-title').innerText = `${c.name.toUpperCase()} (PARODY OF ${c.original.toUpperCase()})`;
     document.getElementById('modal-company-desc').innerText = c.description;
 
-    document.getElementById('modal-company-viability').innerText = `${c.viability}%`;
-    document.getElementById('modal-company-viability').className = c.viability < 40 ? 'red-highlight' : '';
+    document.getElementById('modal-company-viability').innerText = engine.getViabilityRating(c.viability);
+    document.getElementById('modal-company-viability').className = engine.getViabilityRatingClass(c.viability);
 
     document.getElementById('modal-company-valuation').innerText = engine.formatMoney(c.valuation);
     document.getElementById('modal-company-assets').innerText = engine.formatMoney(c.assets);

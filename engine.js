@@ -71,6 +71,22 @@ export function createEngine() {
         }
     }
 
+    function getViabilityRating(viability) {
+        if (viability >= 80) return 'AAA';
+        if (viability >= 65) return 'AA';
+        if (viability >= 55) return 'A';
+        if (viability >= 45) return 'BBB';
+        if (viability >= 35) return 'BB';
+        if (viability >= 20) return 'B';
+        return 'C';
+    }
+
+    function getViabilityRatingClass(viability) {
+        if (viability >= 55) return 'rating-investment';
+        if (viability >= 35) return 'rating-speculative';
+        return 'rating-junk';
+    }
+
     function refreshLocalAcquisitions() {
         const pool = state.companies.filter(c => !c.isOwned && !c.isBankrupt && !c.isSold);
         pool.sort(() => Math.random() - 0.5);
@@ -693,6 +709,8 @@ export function createEngine() {
         getUpgradeItems,
         getLocations,
         formatMoney,
-        calculateNetWorth
+        calculateNetWorth,
+        getViabilityRating,
+        getViabilityRatingClass
     };
 }
