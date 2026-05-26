@@ -95,6 +95,17 @@ function playBeep(type) {
             gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
             osc.start();
             osc.stop(audioCtx.currentTime + 0.8);
+        } else if (type === 'breaking') {
+            const beepDuration = 0.06;
+            const beepGap = 0.045;
+            for (let i = 0; i < 4; i++) {
+                const startTime = audioCtx.currentTime + i * (beepDuration + beepGap);
+                osc.frequency.setValueAtTime(880, startTime);
+                gain.gain.setValueAtTime(0.08, startTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, startTime + beepDuration);
+            }
+            osc.start();
+            osc.stop(audioCtx.currentTime + 4 * (beepDuration + beepGap));
         }
     } catch (e) {
         console.warn("Web Audio API blocked or not supported:", e);
@@ -269,6 +280,7 @@ function closeEventModal() {
 
 function showSimpleEventAlert(title, text, type = 'info') {
     if (type === 'alert') {
+        playBeep('breaking');
         showBreakingToast(title, text);
     } else {
         showToast(title, text);
