@@ -191,7 +191,7 @@ export function createEngine() {
 
         const text = `After 30 months of ruthless private equity engineering, you have retired from the fund.
                      <br><br><strong>Your Final Net Worth:</strong> <span style='font-size:20px; color:#fff;' class='white-highlight'>${formatMoney(finalNW)}</span>
-                     <br><br><strong>Your Corporate Rank:</strong> <span style='color:#33ff33; font-weight:bold;'>${rankText}</span>
+                     <br><br><strong>Your Corporate Rank:</strong> <span style='color:var(--bb-green); font-weight:300;'>${rankText}</span>
                      <br><br>${evaluationText}
                      <br><br>Can you do better in the next fund?`;
 

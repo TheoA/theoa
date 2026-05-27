@@ -152,7 +152,7 @@ function showEventModalFromEngine(eventData) {
         text = "Federal regulators are investigating a string of suspicious dividend recap loans and asset stripping shell networks linked to your fund.";
 
         if (state.upgrades.hasJusticeFriend) {
-            text += "<br><br><span style='color:#33ff33;'>IMMUNITY ACTIVATED: Your funded Supreme Court Justice 'friend' placed an informal call to the regional SEC enforcement office. The investigation is quietly dismissed.</span>";
+            text += "<br><br><span style='color:var(--bb-green);'>IMMUNITY ACTIVATED: Your funded Supreme Court Justice 'friend' placed an informal call to the regional SEC enforcement office. The investigation is quietly dismissed.</span>";
             choices = [{ id: 'close', label: 'CLOSE LAW BOOK AND LAUGH' }];
         } else {
             text += "<br><br>The Department of Justice offers a settlement to bury the charges. Do you pay or call the lawyers?";
@@ -173,7 +173,7 @@ function showEventModalFromEngine(eventData) {
         text = "An angry former factory supervisor who was fired during one of your cost-cutting synergy campaigns has tracked your towncar and pulled a high-powered weapon!";
 
         if (state.upgrades.hasMercSec) {
-            text += "<br><br><span style='color:#33ff33;'>IMMUNITY ACTIVATED: Your elite private mercenary bodyguards instantly return fire with tactical submachine guns. The assailant is neutralized. You sip your Macallan 25 year single-malt in complete safety.</span>";
+            text += "<br><br><span style='color:var(--bb-green);'>IMMUNITY ACTIVATED: Your elite private mercenary bodyguards instantly return fire with tactical submachine guns. The assailant is neutralized. You sip your Macallan 25 year single-malt in complete safety.</span>";
             choices = [{ id: 'close', label: 'WIPE A SPECK OF DUST OFF YOUR ARMANI' }];
         } else {
             text += `<br><br><span class='red-highlight'>You survived the impact, but suffered extreme trauma. Undergoing emergency non-union surgical procedures at a private hospital costs a premium of $2,000,000 cash.</span>`;
@@ -184,7 +184,7 @@ function showEventModalFromEngine(eventData) {
         text = `A national investigative reporter has drafted a highly critical story outlining your asset-stripping techniques, calling you a 'Vampire Squid sucking capital from main street'.`;
 
         if (state.upgrades.ownsNewspaper) {
-            text += `<br><br><span style='color:#33ff33;'>MEDIA SHIELD ACTIVATED: You own 'The Financial Sentinel'. You can order your editors to run a smear campaign on the reporter and kill the story, or let it slide.</span>`;
+            text += `<br><br><span style='color:var(--bb-green);'>MEDIA SHIELD ACTIVATED: You own 'The Financial Sentinel'. You can order your editors to run a smear campaign on the reporter and kill the story, or let it slide.</span>`;
             choices = [
                 { id: 'kill', label: `SPIKE STORY & SMEAR REPORTER (${engine.formatMoney(200000)})` },
                 { id: 'let', label: 'LET STORY PUBLISH (No cost)' }
@@ -343,7 +343,8 @@ function updateUI() {
     const currentYear = state.gameStartYear + Math.floor(totalMonths / 12);
     const quarter = Math.ceil((currentMonth + 1) / 3);
     const monthName = MONTHS[currentMonth];
-    document.getElementById('date-bar-display').innerText = `${monthName} ${currentYear} (Q${quarter}) - turn ${String(state.turn).padStart(2, '0')}/30`;
+    document.getElementById('date-bar-display').innerText = `${monthName} ${currentYear} (Q${quarter})`;
+    document.getElementById('turn-display').innerText = `turn ${String(state.turn).padStart(2, '0')}/30`;
 
     document.getElementById('cash-display').innerText = engine.formatMoney(state.cash);
 
@@ -354,7 +355,7 @@ function updateUI() {
     const nw = engine.calculateNetWorth();
     const nwDisplay = document.getElementById('net-worth-display');
     nwDisplay.innerText = engine.formatMoney(nw);
-    nwDisplay.style.color = nw < 0 ? '#ff3333' : '#fff';
+    nwDisplay.style.color = nw < 0 ? 'var(--bb-red)' : '#fff';
 
     document.getElementById('location-display').innerText = state.location;
 
@@ -402,7 +403,7 @@ function updateUI() {
         }
     }
     if (ownedUpgrades === 0) {
-        upgradesContainer.innerHTML = '<span style="color: rgba(57,255,20,0.5)">[ ] No active legal shields or bribed assets. You are fully exposed to audits and security events.</span>';
+        upgradesContainer.innerHTML = '<span style="color: var(--muted);">[ ] No active legal shields or bribed assets. You are fully exposed to audits and security events.</span>';
     }
 
     // Portfolio
@@ -411,7 +412,7 @@ function updateUI() {
     const owned = state.companies.filter(c => c.isOwned);
 
     if (owned.length === 0) {
-        portfolioContainer.innerHTML = '<p style="text-align: center; color: rgba(57, 255, 20, 0.4); padding-top: 40px;">No companies currently in portfolio.<br>Spend cash on Available Targets to execute leveraged buyouts.</p>';
+        portfolioContainer.innerHTML = '<p style="text-align: center; color: var(--muted); padding-top: 40px;">No companies currently in portfolio.<br>Spend cash on Available Targets to execute leveraged buyouts.</p>';
     } else {
         owned.forEach(c => {
             const item = document.createElement('div');
@@ -426,7 +427,7 @@ function updateUI() {
                     <span class="company-name" onclick="openCompanyModal('${c.id}')">${c.name}</span>${strikeLabel}
                     <div class="company-stats">
                         Valuation: ${engine.formatMoney(c.valuation)} | Company Debt: ${engine.formatMoney(c.debt)} | Viability: ${engine.getViabilityRating(c.viability)}
-                        <br>Flow: <span style="color: ${c.profit < 0 ? '#ff3333' : '#33ff33'}">${c.profit < 0 ? '' : '+'}${engine.formatMoney(c.profit)}/turn</span> | Strip Assets: ${engine.formatMoney(c.assets)}
+                        <br>Flow: <span style="color: ${c.profit < 0 ? 'var(--bb-red)' : 'var(--bb-green)'}">${c.profit < 0 ? '' : '+'}${engine.formatMoney(c.profit)}/turn</span> | Strip Assets: ${engine.formatMoney(c.assets)}
                     </div>
                 </div>
                 <div class="list-item-action">
@@ -443,7 +444,7 @@ function updateUI() {
 
     const visibleAcquisitions = state.availableAcquisitions.filter(c => !c.isOwned);
     if (visibleAcquisitions.length === 0) {
-        acquisitionsContainer.innerHTML = '<p style="text-align: center; color: rgba(57, 255, 20, 0.4); padding-top: 40px;">No targets available in this hub.<br>Travel to alternate markets to scout fresh targets.</p>';
+        acquisitionsContainer.innerHTML = '<p style="text-align: center; color: var(--bb-green); opacity: 0.4; padding-top: 40px;">No targets available in this hub.<br>Travel to alternate markets to scout fresh targets.</p>';
     } else {
         visibleAcquisitions.forEach(c => {
             const equityVal = Math.max(0, c.valuation - c.debt);
@@ -502,7 +503,7 @@ window.openCompanyModal = function(companyId) {
 
     const profDisplay = document.getElementById('modal-company-profit');
     profDisplay.innerText = `${c.profit < 0 ? '' : '+'}${engine.formatMoney(c.profit)} / turn`;
-    profDisplay.style.color = c.profit < 0 ? '#ff3333' : '#33ff33';
+    profDisplay.style.color = c.profit < 0 ? 'var(--bb-red)' : 'var(--bb-green)';
 
     document.getElementById('btn-modal-strip').disabled = (c.assets <= 0);
     document.getElementById('btn-modal-recap').disabled = (c.valuation <= 0);
