@@ -77,8 +77,12 @@
             color: #fff;
             display: flex;
             justify-content: space-between;
+            align-items: center;
             flex-shrink: 0;
         }
+        .date-bar #date-bar-display { flex: 1; text-align: left; }
+        .date-bar #location-display { flex: 1; text-align: center; }
+        .date-bar #turn-display { flex: 1; text-align: right; }
 
         .header-title-row {
             display: flex;
@@ -601,6 +605,7 @@
 
         <div class="date-bar">
             <span id="date-bar-display"></span>
+            <span id="location-display"></span>
             <span id="turn-display"></span>
         </div>
 
@@ -618,10 +623,6 @@
                 <div class="stat-item">
                     <span class="stat-label">NET WORTH</span>
                     <span id="net-worth-display" class="stat-value cyan-highlight">$8.00M</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">LOCATION</span>
-                    <span id="location-display" class="stat-value">Cayman Islands</span>
                 </div>
             </div>
 
