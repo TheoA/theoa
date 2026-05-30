@@ -53,7 +53,11 @@ const assert = (condition, message) => {
 (async () => {
     const server = await startServer();
 
-    const browser = await chromium.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+    const browser = await chromium.launch({
+        headless: process.env.E2E_HEADED !== 'true',
+        slowMo: parseInt(process.env.E2E_SLOWMO || '0'),
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
     const page = await browser.newPage();
 
     const consoleMessages = [];
@@ -110,19 +114,25 @@ const assert = (condition, message) => {
         const levDown = parseMoney(levDownText);
         const levDebtText = await levCompany.locator('.btn-lev .btn-debt').innerText();
 
+        console.log(`  Available companies: ${availableCount}`);
+        console.log(`  Down payment: ${levDownText}, Company debt: ${levDebtText}`);
+
         const cashBeforeLev = parseMoney(await page.locator('#cash-display').innerText());
         const netWorthBeforeLev = parseMoney(await page.locator('#net-worth-display').innerText());
 
+        console.log(`  Cash before: $${cashBeforeLev}`);
         await levCompany.locator('.btn-lev').click();
+        await page.waitForTimeout(500);
 
-        const netWorthAfterLevText = await page.locator('#net-worth-display').innerText();
-        const netWorthAfterLev = parseMoney(netWorthAfterLevText);
         const cashAfterLevText = await page.locator('#cash-display').innerText();
         const cashAfterLev = parseMoney(cashAfterLevText);
+        const netWorthAfterLevText = await page.locator('#net-worth-display').innerText();
+        const netWorthAfterLev = parseMoney(netWorthAfterLevText);
+
+        console.log(`  Cash after: ${cashAfterLevText}, Net worth: ${netWorthAfterLevText}`);
 
         assert(cashAfterLev < cashBeforeLev, `Cash decreased after leveraged purchase: ${cashAfterLevText}`);
         assert(netWorthAfterLev < netWorthBeforeLev, `Net worth decreased (company debt loaded): ${netWorthAfterLevText}`);
-        console.log(`  Down payment: ${levDownText}, Company debt: ${levDebtText}`);
         console.log(`  Net worth: ${netWorthBeforeLev} → ${netWorthAfterLev}`);
     } else {
         console.log('  ⚠ No companies available for leveraged purchase (all bought)');

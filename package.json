@@ -1,5 +1,10 @@
 {
   "type": "module",
+  "scripts": {
+    "test": "node tests/e2e/game.spec.js",
+    "test:headed": "E2E_HEADED=true E2E_SLOWMO=100 node tests/e2e/game.spec.js",
+    "test:slow": "E2E_HEADED=true E2E_SLOWMO=1000 node tests/e2e/game.spec.js"
+  },
   "dependencies": {
     "playwright": "^1.60.0"
   }
