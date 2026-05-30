@@ -1,7 +1,3 @@
-# Vulture Wars
-
-A financial strategy game - "Vulture Capitalist" parody of Dope Wars with Bloomberg Terminal aesthetic.
-
 ## Testing
 
 ### Run Tests
