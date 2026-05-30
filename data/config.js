@@ -47,6 +47,7 @@ export const config = {
 
     // Upgrades
     bribedSenatorHeatMult: 0.5,
+    synergyMultiplier: 10,
 
     // Location acquisition counts
     locationAcquisitionCounts: {

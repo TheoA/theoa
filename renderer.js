@@ -387,25 +387,44 @@ function updateUI() {
         travelContainer.appendChild(btn);
     });
 
-    // Upgrades
-    const upgradesContainer = document.getElementById('upgrades-status');
-    upgradesContainer.innerHTML = '';
-    let ownedUpgrades = 0;
-    for (let id in state.upgrades) {
-        const active = state.upgrades[id];
-        const item = engine.getUpgradeItems().find(u => u.id === id);
-        if (active) {
-            ownedUpgrades++;
-            const span = document.createElement('span');
-            span.className = 'green-highlight';
-            span.innerText = `[x] ${item.name}`;
-            span.title = item.desc;
-            upgradesContainer.appendChild(span);
+    // Synergies
+    const synergiesContainer = document.getElementById('upgrades-status');
+    synergiesContainer.innerHTML = '';
+    const upgradeItems = engine.getUpgradeItems();
+    const synergies = engine.getState().synergies;
+
+    upgradeItems.forEach(item => {
+        const isOwned = state.upgrades[item.id];
+        const isTriggered = synergies.triggeredThisTurn === item.id;
+        const currentCost = isTriggered ? item.cost : item.cost * 10;
+        const canAfford = state.cash >= currentCost;
+
+        const div = document.createElement('div');
+        div.style.cssText = 'display: flex; align-items: center; justify-content: space-between; width: 100%;';
+
+        if (isOwned) {
+            div.innerHTML = `
+                <div style="display: flex; flex-direction: column;">
+                    <span style="color: var(--accent); font-size: 14px; padding: 8px 10px 4px 14px;" title="${item.desc}">${item.name}</span>
+                    <span style="font-size: 10px; color: var(--muted); padding: 0 10px 8px 14px;">${item.shortDesc}</span>
+                </div>
+                <span class="green-highlight" style="font-size: 14px;">&#10003;</span>
+            `;
+        } else {
+            div.innerHTML = `
+                <div style="display: flex; flex-direction: column;">
+                    <span style="color: var(--accent); font-size: 14px; padding: 8px 10px 4px 14px;" title="${item.desc}">${item.name}</span>
+                    <span style="font-size: 10px; color: var(--muted); padding: 0 10px 8px 14px;">${item.shortDesc}</span>
+                </div>
+                <span style="display: flex; align-items: center; gap: 8px;">
+                    <span style="color: var(--accent2); font-size: 18px; font-weight: 300; line-height: 1.1;">${engine.formatMoney(currentCost)}</span>
+                    <button onclick="purchaseSynergy('${item.id}')" ${canAfford ? '' : 'disabled'} style="padding: 8px 10px; font-size: 11px; color: #fff; cursor: pointer; border: 1px solid #555; background: #222; text-transform: uppercase;">BUY</button>
+                </span>
+            `;
         }
-    }
-    if (ownedUpgrades === 0) {
-        upgradesContainer.innerHTML = '<span style="color: var(--muted);">[ ] No active legal shields or bribed assets. You are fully exposed to audits and security events.</span>';
-    }
+
+        synergiesContainer.appendChild(div);
+    });
 
     // Portfolio
     const portfolioContainer = document.getElementById('portfolio-list');
@@ -413,7 +432,7 @@ function updateUI() {
     const owned = state.companies.filter(c => c.isOwned);
 
     if (owned.length === 0) {
-        portfolioContainer.innerHTML = '<p style="text-align: center; color: var(--muted); padding-top: 10px;">Buy companies to manage portfolio, change locations to advance date</p>';
+        portfolioContainer.innerHTML = '<p style="text-align: center; color: var(--muted); padding: 8px 10px 8px 14px;">Buy companies to manage portfolio, change locations to advance date</p>';
     } else {
         owned.forEach(c => {
             const strikeLabel = (state.strikeTurns[c.id] && state.strikeTurns[c.id] > 0)
@@ -446,7 +465,7 @@ function updateUI() {
 
     const visibleAcquisitions = state.availableAcquisitions.filter(c => !c.isOwned);
     if (visibleAcquisitions.length === 0) {
-        acquisitionsContainer.innerHTML = '<p style="text-align: center; color: var(--bb-green); opacity: 0.4; padding-top: 40px;">No targets available in this hub.<br>Travel to alternate markets to scout fresh targets.</p>';
+        acquisitionsContainer.innerHTML = '<p style="text-align: center; color: var(--bb-green); opacity: 0.4; padding: 40px 10px 40px 14px;">No targets available in this hub.<br>Travel to alternate markets to scout fresh targets.</p>';
     } else {
         visibleAcquisitions.forEach(c => {
             const equityVal = Math.max(0, c.valuation - c.debt);
@@ -655,4 +674,12 @@ window.repayDebt = function() {
     playBeep('click');
     const result = engine.repayDebt();
     processResult(result);
+};
+window.purchaseSynergy = function(upgradeId) {
+    playBeep('click');
+    const result = engine.purchaseSynergy(upgradeId);
+    result.messages.forEach(m => {
+        showSimpleEventAlert(m.title, m.text, m.type);
+    });
+    updateUI();
 };

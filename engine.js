@@ -26,6 +26,9 @@ export function createEngine() {
                 hasShellCorp: false,
                 hasJusticeFriend: false
             },
+            synergies: {
+                triggeredThisTurn: null
+            },
             companies: companies.map(c => ({
                 ...c,
                 isOwned: false,
@@ -406,6 +409,7 @@ export function createEngine() {
         // Advance turn
         state.turn++;
         state.location = locName;
+        state.synergies.triggeredThisTurn = null;
 
         // Decrement temporary modifiers
         if (state.marketCrashTurns > 0) state.marketCrashTurns--;
@@ -480,6 +484,7 @@ export function createEngine() {
             const available = upgradeItems.filter(u => !state.upgrades[u.id]);
             if (available.length > 0) {
                 const item = available[Math.floor(Math.random() * available.length)];
+                state.synergies.triggeredThisTurn = item.id;
                 return { messages, pendingUpgrade: item };
             }
         }
@@ -493,10 +498,40 @@ export function createEngine() {
         if (accept && state.cash >= item.cost) {
             state.cash -= item.cost;
             state.upgrades[item.id] = true;
+            state.synergies.triggeredThisTurn = null;
             messages.push(msg('cash_loss', 'UPGRADE ACQUIRED', `Purchased ${item.name} for ${formatMoney(item.cost)}.`, { cash: -item.cost }));
         } else if (accept) {
             messages.push(msg('info', 'INSUFFICIENT FUNDS', `Need ${formatMoney(item.cost)} for ${item.name}. You have ${formatMoney(state.cash)}.`, { cash_needed: item.cost, cash_available: state.cash }));
         }
+
+        return { messages };
+    }
+
+    function purchaseSynergy(upgradeId) {
+        const messages = [];
+        const item = upgradeItems.find(u => u.id === upgradeId);
+        if (!item) {
+            messages.push(msg('info', 'ERROR', 'Upgrade not found.', { error: true }));
+            return { messages };
+        }
+
+        if (state.upgrades[upgradeId]) {
+            messages.push(msg('info', 'ALREADY OWNED', `${item.name} is already owned.`, { error: true }));
+            return { messages };
+        }
+
+        const isTriggered = state.synergies.triggeredThisTurn === upgradeId;
+        const currentCost = isTriggered ? item.cost : item.cost * config.synergyMultiplier;
+
+        if (state.cash < currentCost) {
+            messages.push(msg('info', 'INSUFFICIENT FUNDS', `Need ${formatMoney(currentCost)} for ${item.name}. You have ${formatMoney(state.cash)}.`, { cash_needed: currentCost, cash_available: state.cash }));
+            return { messages };
+        }
+
+        state.cash -= currentCost;
+        state.upgrades[upgradeId] = true;
+        state.synergies.triggeredThisTurn = null;
+        messages.push(msg('cash_loss', 'SYNERGY ACQUIRED', `Purchased ${item.name} for ${formatMoney(currentCost)}.`, { cash: -currentCost }));
 
         return { messages };
     }
@@ -667,6 +702,7 @@ export function createEngine() {
         buyCompanyLeveraged,
         travelTo,
         resolveUpgrade,
+        purchaseSynergy,
         openCompanyModal,
         performStrip,
         performRecap,

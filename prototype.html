@@ -259,8 +259,8 @@
         .company-panel {
             border: none;
             background: var(--surface);
-            padding: 10px;
-            margin-bottom: 10px;
+            padding: 8px 10px 8px 14px;
+            margin-bottom: 4px;
         }
 
         .company-header {
@@ -268,7 +268,7 @@
             justify-content: space-between;
             align-items: stretch;
             gap: 20px;
-            margin-bottom: 6px;
+            margin-bottom: 0;
         }
 
         .company-info {
@@ -324,7 +324,7 @@
         .metrics {
             font-size: 11px;
             color: #fff;
-            margin-bottom: 8px;
+            margin-bottom: 0;
         }
 
         .metrics .neg {
@@ -403,6 +403,30 @@
 
         .btn-debt .rating-junk {
             color: var(--danger);
+        }
+
+        .btn-borrow-repay {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-borrow-repay button {
+            background: transparent;
+            border: none;
+            color: var(--bb-white);
+            font-size: 9px;
+            padding: 2px 6px;
+            cursor: pointer;
+        }
+
+        .btn-borrow-repay button:hover {
+            color: var(--bb-cyan);
+        }
+
+        .btn-border {
+            border: 1px solid var(--muted);
+            padding: 2px 5px;
+            border-radius: 3px;
         }
 
         .btn-note {
@@ -654,7 +678,7 @@
         <div class="top-stats">
             <div class="stat-item">
                 <span class="stat-label">CASH</span>
-                <span id="cash-display" class="stat-value white-highlight">$10.00M</span>
+                <span id="cash-display" class="stat-value cyan-highlight">$10.00M</span>
             </div>
             <div class="stat-item">
                 <span class="stat-label">PERSONAL DEBT</span>
@@ -692,7 +716,7 @@
                 <!-- PORTFOLIO -->
                 <div class="panel">
                     <div class="panel-header">Portfolio</div>
-                    <div class="panel-content" id="portfolio-list">
+                    <div class="panel-content" id="portfolio-list" style="padding: 0;">
                         <!-- Dynamic -->
                     </div>
                 </div>
@@ -700,7 +724,7 @@
                 <!-- ACQUISITIONS -->
                 <div class="panel">
                     <div class="panel-header">Available Target Acquisitions</div>
-                    <div class="panel-content" id="acquisitions-list">
+                    <div class="panel-content" id="acquisitions-list" style="padding: 0;">
                         <!-- Dynamic -->
                     </div>
                 </div>
@@ -710,23 +734,20 @@
             <div class="finance-panel">
                 <div class="panel">
                     <div class="panel-header">Loans</div>
-                    <div class="panel-content">
-                        <div style="font-size: 11px; margin-bottom: 5px;">
-                            Rate: <span id="interest-rate-text" class="red-highlight">10.0% / turn</span> | 
-                            Limit: <span id="credit-limit-text">$10.0M</span>
-                        </div>
-                        <div class="button-group">
-                            <button id="btn-borrow" onclick="borrowCash()">Borrow $1M</button>
-                            <button id="btn-repay" onclick="repayDebt()">Repay $1M</button>
+                    <div class="panel-content" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px 8px 14px;">
+                        <span style="font-size: 10px; color: #f4d03f;">Interest rates <span id="interest-rate-text">10.0%</span>/turn | limited <span id="credit-limit-text">$10.0M</span></span>
+                        <div class="btn-borrow-repay">
+                            <button id="btn-borrow" onclick="borrowCash()"><span class="btn-border">BORROW</span> <span style="color: var(--bb-red);">+$1M</span></button>
+                            <button id="btn-repay" onclick="repayDebt()"><span class="btn-border">REPAY</span> <span class="cyan-highlight">-$1M</span></button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- UPGRADES -->
+            <!-- SYNERGIES -->
             <div class="panel" style="flex-shrink: 0;">
-                <div class="panel-header">Notes</div>
-                <div class="panel-content" id="upgrades-status" style="display: flex; flex-wrap: wrap; gap: 10px; min-height: 20px;">
+                <div class="panel-header">Synergies</div>
+                <div class="panel-content" id="upgrades-status" style="display: flex; flex-direction: column; gap: 4px; min-height: 20px; padding: 0;">
                     <!-- Dynamic -->
                 </div>
             </div>
