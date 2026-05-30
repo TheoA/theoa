@@ -134,8 +134,8 @@ const assert = (condition, message) => {
     const turnAfter = parseInt(turnAfterText.match(/\d+/)[0]);
     assert(turnAfter === turnBefore + 1, `Turn incremented: ${turnBefore} → ${turnAfter}`);
 
-    const locationText = await page.locator('#location-display').innerText();
-    assert(locationText.includes('Wall Street'), `Location changed to: ${locationText}`);
+    const wallStreetBtnDisabled = await wallStreetBtn.isDisabled();
+    assert(wallStreetBtnDisabled, `Wall Street button now disabled (location changed)`);
 
     console.log('\n=== Console Errors ===');
     const errors = consoleMessages.filter(m => m.type === 'error' || m.type === 'pageerror');
