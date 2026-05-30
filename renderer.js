@@ -418,7 +418,7 @@ function updateUI() {
                 </div>
                 <span style="display: flex; align-items: center; gap: 8px;">
                     <span style="color: var(--accent2); font-size: 18px; font-weight: 300; line-height: 1.1;">${engine.formatMoney(currentCost)}</span>
-                    <button onclick="purchaseSynergy('${item.id}')" ${canAfford ? '' : 'disabled'} style="padding: 8px 10px; font-size: 11px; color: #fff; cursor: pointer; border: 1px solid #555; background: #222; text-transform: uppercase;">BUY</button>
+                    <button onclick="purchaseSynergy('${item.id}')" ${canAfford ? '' : 'disabled'} style="padding: 8px 10px; font-size: 11px; color: #fff; cursor: pointer; border: 1px solid var(--border); background: #222; text-transform: uppercase;">BUY</button>
                 </span>
             `;
         }
