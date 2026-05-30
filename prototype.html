@@ -65,13 +65,13 @@
         }
 
         header {
-            border-bottom: 1px solid var(--bb-amber);
+            border-bottom: none;
             padding: 0;
             flex-shrink: 0;
         }
 
         .date-bar {
-            padding: 4px 8px;
+            padding: 5px 8px;
             font-size: 13px;
             font-weight: 300;
             color: #fff;
@@ -79,6 +79,9 @@
             justify-content: space-between;
             align-items: center;
             flex-shrink: 0;
+            gap: 8px;
+            border-bottom: 1px solid #333;
+            line-height: 1;
         }
         .date-bar #date-bar-display { flex: 1; text-align: left; }
         .date-bar #location-display { flex: 1; text-align: center; }
@@ -86,7 +89,7 @@
 
         .header-title-row {
             display: flex;
-            align-items: center;
+            align-items: stretch;
             gap: 0;
             margin: 0;
             padding: 0;
@@ -98,12 +101,13 @@
             letter-spacing: -0.02rem;
             color: #000000;
             background-color: var(--bb-amber);
-            padding: 0.1rem;
+            padding: 0 2px;
             margin: 0;
             display: flex;
-            align-items: baseline;
+            align-items: center;
             gap: 8px;
             white-space: nowrap;
+            line-height: 1;
         }
 
         .terminal-title .version {
@@ -114,10 +118,10 @@
             display: flex;
             align-items: center;
             gap: 20px;
-            background-color: #000000;
+            background-color: rgb(124, 29, 34);
             color: var(--bb-white);
-            padding: 8px 15px;
             flex: 1;
+            line-height: 1;
         }
 
         .header-info-bar .white-highlight {
@@ -164,7 +168,6 @@
         .top-stats {
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
-            gap: 4px;
             border: 1px solid var(--border-color);
             background-color: var(--panel-bg);
             padding: 4px 8px;
@@ -178,12 +181,10 @@
         .stat-label { font-size: 10px; color: #888; text-transform: uppercase; }
         .stat-value { font-size: 14px; font-weight: 300; }
 
-        .dashboard {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            flex: 1;
-            min-height: 300px;
+        @media(max-width: 500px) {
+            .top-stats {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
         @media(max-width: 800px) {
@@ -410,8 +411,28 @@
 
         .travel-group {
             display: flex;
-            overflow-x: auto;
-            gap: 4px;
+            gap: 0;
+            margin-top: -1px;
+        }
+
+        .travel-group button {
+            border: none;
+            border-radius: 0;
+            background: #000;
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .travel-group button:disabled {
+            background: #444;
+            cursor: default;
+        }
+
+        .travel-group button:hover:not(:disabled) {
+            background: #333;
         }
 
         .finance-panel {
@@ -488,14 +509,12 @@
         /* Sound Control Switch */
         .sound-toggle {
             font-size: 10px;
-            border: 1px solid var(--bb-white);
             padding: 0 4px;
             cursor: pointer;
             color: var(--bb-white);
         }
         .sound-toggle:hover {
             color: var(--bb-amber);
-            border-color: var(--bb-amber);
         }
 
         .green-highlight { color: var(--bb-green); }
@@ -593,12 +612,28 @@
 </head>
 <body>
     <div class="crt-container">
+        <!-- TOP STATS BAR -->
+        <div class="top-stats">
+            <div class="stat-item">
+                <span class="stat-label">CASH</span>
+                <span id="cash-display" class="stat-value white-highlight">$10.00M</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">PERSONAL DEBT</span>
+                <span id="debt-display" class="stat-value red-highlight">$2.00M</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">NET WORTH</span>
+                <span id="net-worth-display" class="stat-value cyan-highlight">$8.00M</span>
+            </div>
+        </div>
+
         <!-- HEADER -->
         <header>
             <div class="header-title-row">
                 <span class="terminal-title">Doomberg Terminal</span>
                 <div class="header-info-bar">
-                    <div class="sound-toggle" id="sound-toggle">[SOUND: ON]</div>
+                    <div class="sound-toggle" id="sound-toggle">SOUND</div>
                     <div class="status-bar">
                         <div class="heat-bar-container">
                             <span>HEAT:</span>
@@ -612,41 +647,19 @@
             </div>
         </header>
 
-        <div class="date-bar">
-            <span id="date-bar-display"></span>
-            <span id="location-display"></span>
-            <span id="turn-display"></span>
-        </div>
-
         <div class="main-content">
-            <!-- TOP STATS BAR -->
-            <div class="top-stats">
-                <div class="stat-item">
-                    <span class="stat-label">CASH</span>
-                    <span id="cash-display" class="stat-value white-highlight">$10.00M</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">PERSONAL DEBT</span>
-                    <span id="debt-display" class="stat-value red-highlight">$2.00M</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">NET WORTH</span>
-                    <span id="net-worth-display" class="stat-value cyan-highlight">$8.00M</span>
-                </div>
+            <!-- DATE / LOCATION / TURN BAR -->
+            <div class="date-bar">
+                <span id="date-bar-display"></span>
+                <span id="location-display"></span>
+                <span id="turn-display"></span>
             </div>
+
+            <!-- TRAVEL TABS -->
+            <div class="travel-group" id="travel-buttons"></div>
 
             <!-- DASHBOARD -->
             <div class="dashboard">
-                <!-- TRAVEL -->
-                <div class="panel">
-                    <div class="panel-header">Travel</div>
-                    <div class="panel-content">
-                        <div class="travel-group" id="travel-buttons">
-                            <!-- Dynamic buttons -->
-                        </div>
-                    </div>
-                </div>
-
                 <!-- PORTFOLIO -->
                 <div class="panel">
                     <div class="panel-header">Portfolio</div>

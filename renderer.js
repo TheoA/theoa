@@ -33,10 +33,11 @@ function toggleSound() {
     soundEnabled = !soundEnabled;
     const toggleBtn = document.getElementById('sound-toggle');
     if (soundEnabled) {
-        toggleBtn.innerText = '[SOUND: ON]';
+        toggleBtn.innerText = 'SOUND';
         playBeep('success');
     } else {
-        toggleBtn.innerText = '[SOUND: OFF]';
+        toggleBtn.innerText = 'MUTED';
+        playBeep('success');
     }
 }
 
@@ -379,8 +380,9 @@ function updateUI() {
 
         if (state.location === l.name) {
             btn.disabled = true;
-            btn.innerHTML += ' (HERE)';
+            btn.style.backgroundColor = '#444';
         } else {
+            btn.style.backgroundColor = '#000';
             btn.onclick = () => travelTo(l.name);
         }
         travelContainer.appendChild(btn);
