@@ -8,6 +8,7 @@ let soundEnabled = true;
 let engine = null;
 let selectedCompanyId = null;
 let pendingEventData = null;
+let companyLboCashPct = {};
 
 export function initRenderer() {
     engine = createEngine();
@@ -451,8 +452,9 @@ function updateUI() {
             const equityVal = Math.max(0, c.valuation - c.debt);
             const fee = Math.round(equityVal * 0.10);
             const acqCost = equityVal + fee;
-            const leveragedDown = Math.round(acqCost * 0.2);
-            const leveragedDebt = Math.round(acqCost * 0.8);
+            const cashPct = companyLboCashPct[c.id] || 0.20;
+            const leveragedDown = Math.round(acqCost * cashPct);
+            const leveragedDebt = Math.round(acqCost * (1 - cashPct));
             const profitClass = c.profit < 0 ? 'neg' : '';
 
             acquisitionsContainer.innerHTML += `
@@ -466,10 +468,14 @@ function updateUI() {
                             </div>
                         </div>
                         <button class="btn btn-lbo" onclick="buyCompanyLeveraged('${c.id}')">
-                            <span class="btn-action">BUY LBO</span>
+                            <span class="btn-action">BUY LBO ${Math.round(cashPct * 100)}% CASH</span>
                             <span class="btn-price">${engine.formatMoney(leveragedDown)}</span>
-                            <span class="btn-debt">COMPANY DEBT ${engine.formatMoney(leveragedDebt)}</span>
+                            <span class="btn-debt"><span class="debt-label">Company Debt</span><br><span class="debt-red">${engine.formatMoney(leveragedDebt)}</span><br><span class="debt-label">Impact</span><br><span class="${engine.getViabilityRatingClass(Math.max(0, c.viability - Math.ceil((leveragedDebt / c.baseValuation) * 20)))}">${engine.getViabilityRating(Math.max(0, c.viability - Math.ceil((leveragedDebt / c.baseValuation) * 20)))}</span></span>
                         </button>
+                        <div class="lbo-cash-ctrl">
+                            <button onclick="adjustLboCashPct('${c.id}', 0.10)">+</button>
+                            <button onclick="adjustLboCashPct('${c.id}', -0.10)">−</button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -512,10 +518,20 @@ window.closeCompanyModal = function() {
 
 window.buyCompanyLeveraged = function(companyId) {
     playBeep('click');
-    const result = engine.buyCompanyLeveraged(companyId);
+    const cashPct = companyLboCashPct[companyId] || 0.20;
+    const result = engine.buyCompanyLeveraged(companyId, cashPct);
     result.messages.forEach(m => {
         showSimpleEventAlert(m.title, m.text, m.type);
     });
+    updateUI();
+};
+
+window.adjustLboCashPct = function(companyId, delta) {
+    playBeep('click');
+    if (!companyLboCashPct[companyId]) {
+        companyLboCashPct[companyId] = 0.20;
+    }
+    companyLboCashPct[companyId] = Math.round((companyLboCashPct[companyId] + delta) * 100) / 100;
     updateUI();
 };
 

@@ -377,7 +377,28 @@
         .btn-debt {
             font-size: 10px;
             color: var(--danger);
+            text-transform: none;
             margin-top: 2px;
+        }
+
+        .btn-debt .debt-label {
+            color: #fff;
+        }
+
+        .btn-debt .debt-red {
+            color: var(--danger);
+        }
+
+        .btn-debt .rating-investment {
+            color: var(--success);
+        }
+
+        .btn-debt .rating-speculative {
+            color: #f4d03f;
+        }
+
+        .btn-debt .rating-junk {
+            color: var(--danger);
         }
 
         .btn-note {
@@ -386,7 +407,38 @@
             margin-top: 2px;
         }
 
-        .button-group {
+.lbo-cash-ctrl {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            align-self: stretch;
+            margin-left: -1px;
+        }
+
+        .lbo-cash-ctrl button {
+            background: #222;
+            border: 1px solid var(--border);
+            border-left: none;
+            color: #fff;
+            font-size: 14px;
+            aspect-ratio: 1 / 1;
+            width: auto;
+            height: 50%;
+            padding: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .lbo-cash-ctrl button:hover {
+            background: #333;
+            border-color: var(--bb-amber);
+        }
+
+        .btn {
             display: flex;
             flex-wrap: wrap;
             gap: 4px;

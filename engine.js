@@ -360,7 +360,7 @@ export function createEngine() {
         return { messages };
     }
 
-    function buyCompanyLeveraged(companyId) {
+    function buyCompanyLeveraged(companyId, cashPct) {
         const messages = [];
         const c = state.companies.find(comp => comp.id === companyId);
         if (!c) {
@@ -371,10 +371,11 @@ export function createEngine() {
         const equityVal = Math.max(0, c.valuation - c.debt);
         const fee = Math.round(equityVal * config.acquisitionFee);
         const totalCost = equityVal + fee;
-        const cashDown = Math.round(totalCost * config.leveragedDownPayment);
+        const cashDownPct = (cashPct !== undefined) ? cashPct : config.leveragedDownPayment;
+        const cashDown = Math.round(totalCost * cashDownPct);
 
         if (state.cash < cashDown) {
-            messages.push(msg('info', 'INSUFFICIENT CAPITAL', `Need ${formatMoney(cashDown)} cash (20% down). You have ${formatMoney(state.cash)}.`, { cash_needed: cashDown, cash_available: state.cash }));
+            messages.push(msg('info', 'INSUFFICIENT CAPITAL', `Need ${formatMoney(cashDown)} cash (${Math.round(cashDownPct * 100)}% down). You have ${formatMoney(state.cash)}.`, { cash_needed: cashDown, cash_available: state.cash }));
             return { messages };
         }
 
@@ -385,9 +386,9 @@ export function createEngine() {
         
         if (!state.hasHadFirstCompanyPurchase) {
             state.hasHadFirstCompanyPurchase = true;
-            messages.push(msg('alert', 'BREAKING', `${c.name} bought out by new private equity sensation`, { cash: -cashDown }));
+            messages.push(msg('alert', 'BREaking', `${c.name} bought out by new private equity sensation`, { cash: -cashDown }));
         } else {
-            messages.push(msg('cash_loss', 'ACQUIRED (LBO)', `Leverage bought ${c.name}. Down payment ${formatMoney(cashDown)}, company debt loaded: ${formatMoney(totalCost - cashDown)}.`, { cash: -cashDown }));
+            messages.push(msg('cash_loss', 'ACQUIRED (LBO)', `Leverage bought ${c.name}. Down payment ${formatMoney(cashDown)} (${Math.round(cashDownPct * 100)}%), company debt loaded: ${formatMoney(totalCost - cashDown)}.`, { cash: -cashDown }));
         }
 
         return { messages };
