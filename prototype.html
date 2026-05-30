@@ -327,7 +327,15 @@
             margin-bottom: 0;
         }
 
+        .metrics .metric-item {
+            white-space: nowrap;
+        }
+
         .metrics .neg {
+            color: var(--danger);
+        }
+
+        .metrics .debt-red {
             color: var(--danger);
         }
 
@@ -338,16 +346,19 @@
             background: #222;
             border: 1px solid var(--border);
             padding: 8px 10px 8px 14px;
-            text-align: left;
+            text-align: center;
             font-family: var(--font-stack);
             cursor: pointer;
             overflow: hidden;
             align-self: center;
-            min-width: 130px;
         }
 
         .btn-lbo {
-            align-self: stretch;
+            position: relative;
+            width: 5rem;
+            padding: 8px 10px;
+            background: #222;
+            border: 1px solid var(--border);
         }
 
         .btn::before {
@@ -359,7 +370,7 @@
             width: 3px;
         }
 
-        .btn-lbo::before { background: var(--accent2); }
+        .btn-lbo::before { display: none; }
         .btn-manage::before { display: none; }
 
         .btn-action {
@@ -435,33 +446,83 @@
             margin-top: 2px;
         }
 
-.lbo-cash-ctrl {
+        .lbo-cash-ctrl {
             display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            gap: 0;
-            align-self: stretch;
-            margin-left: -1px;
+            flex-direction: row;
+            gap: 8px;
+            justify-content: center;
         }
 
         .lbo-cash-ctrl button {
             background: transparent;
             border: none;
-            border-left: none;
-            color: var(--accent2);
-            font-size: 22px;
-            width: 24px;
-            min-height: 40px;
+            color: #fff;
+            font-size: 18px;
+            width: 32px;
+            height: 32px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex: 1;
         }
 
         .lbo-cash-ctrl button:hover {
-            background: #333;
-            border-color: var(--bb-amber);
+            background: var(--accent2);
+            color: var(--bg);
+        }
+
+        .lbo-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 11px;
+            color: var(--accent2);
+            text-align: right;
+        }
+
+        .lbo-info .lbo-price {
+            font-size: 18px;
+            font-weight: 300;
+        }
+
+        .lbo-info .lbo-debt {
+            color: #fff;
+        }
+
+        .lbo-info .lbo-debt .debt-red {
+            color: var(--danger);
+        }
+
+        .lbo-info .lbo-impact {
+            color: #fff;
+        }
+
+        .lbo-right {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            width: 5rem;
+        }
+
+        .lbo-cash-ctrl {
+            display: flex;
+            flex-direction: row;
+            gap: 6px;
+            justify-content: center;
+        }
+
+        .lbo-cash-ctrl button {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 14px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn {

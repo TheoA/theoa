@@ -483,17 +483,22 @@ function updateUI() {
                             <div class="company-name-row">${c.name} <span class="viability ${engine.getViabilityRatingClass(c.viability)}">${engine.getViabilityRating(c.viability)}</span></div>
                             <div class="company-ticker">${c.description}</div>
                             <div class="metrics">
-                                EV ${engine.formatMoney(c.valuation)} · Debt ${engine.formatMoney(c.debt)} · Assets ${engine.formatMoney(c.assets)} · <span class="${profitClass}">${c.profit < 0 ? '' : '+'}${engine.formatMoney(c.profit)}/turn</span>
+                                <span class="metric-item">EV ${engine.formatMoney(c.valuation)}</span> · <span class="metric-item">Debt: <span class="debt-red">${engine.formatMoney(c.debt)}</span></span> · <span class="metric-item">Assets ${engine.formatMoney(c.assets)}</span> · Profit <span class="${profitClass}">${c.profit < 0 ? '' : '+'}${engine.formatMoney(c.profit)}/turn</span>
                             </div>
                         </div>
-                        <button class="btn btn-lbo" onclick="buyCompanyLeveraged('${c.id}')">
-                            <span class="btn-action">BUY LBO ${Math.round(cashPct * 100)}% CASH</span>
-                            <span class="btn-price">${engine.formatMoney(leveragedDown)}</span>
-                            <span class="btn-debt"><span class="debt-label">Company Debt</span><br><span class="debt-red">${engine.formatMoney(leveragedDebt)}</span><br><span class="debt-label">Impact</span><br><span class="${engine.getViabilityRatingClass(Math.max(0, c.viability - Math.ceil((leveragedDebt / c.baseValuation) * 20)))}">${engine.getViabilityRating(Math.max(0, c.viability - Math.ceil((leveragedDebt / c.baseValuation) * 20)))}</span></span>
-                        </button>
-                        <div class="lbo-cash-ctrl">
-                            <button onclick="adjustLboCashPct('${c.id}', 0.10)">+</button>
-                            <button onclick="adjustLboCashPct('${c.id}', -0.10)">−</button>
+                        <div class="lbo-info">
+                            <span class="lbo-price">${engine.formatMoney(leveragedDown)}</span>
+                            <span class="lbo-debt"><span class="debt-label">Debt</span><br><span class="debt-red">+${engine.formatMoney(leveragedDebt)}</span></span>
+                            <span class="lbo-impact">Impact<br><span class="${engine.getViabilityRatingClass(Math.max(0, c.viability - Math.ceil((leveragedDebt / c.baseValuation) * 20)))}">${engine.getViabilityRating(Math.max(0, c.viability - Math.ceil((leveragedDebt / c.baseValuation) * 20)))}</span></span>
+                        </div>
+                        <div class="lbo-right">
+                            <button class="btn btn-lbo" onclick="buyCompanyLeveraged('${c.id}')">
+                                <span class="btn-action">BUY LBO<br>${Math.round(cashPct * 100)}% CASH</span>
+                            </button>
+                            <div class="lbo-cash-ctrl">
+                                <button onclick="adjustLboCashPct('${c.id}', 0.10)">+</button>
+                                <button onclick="adjustLboCashPct('${c.id}', -0.10)">−</button>
+                            </div>
                         </div>
                     </div>
                 </div>
