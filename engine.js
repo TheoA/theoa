@@ -360,37 +360,6 @@ export function createEngine() {
         return { messages };
     }
 
-    function buyCompanyCash(companyId) {
-        const messages = [];
-        const c = state.companies.find(comp => comp.id === companyId);
-        if (!c) {
-            messages.push(msg('info', 'ERROR', `Company ${companyId} not found.`, { error: true }));
-            return { messages };
-        }
-
-        const equityVal = Math.max(0, c.valuation - c.debt);
-        const fee = Math.round(equityVal * config.acquisitionFee);
-        const totalCost = equityVal + fee;
-
-        if (state.cash < totalCost) {
-            messages.push(msg('info', 'INSUFFICIENT CAPITAL', `Need ${formatMoney(totalCost)} cash (Equity: ${formatMoney(equityVal)} + 10% fee). You have ${formatMoney(state.cash)}.`, { cash_needed: totalCost, cash_available: state.cash }));
-            return { messages };
-        }
-
-        state.cash -= totalCost;
-        c.isOwned = true;
-        state.availableAcquisitions = state.availableAcquisitions.filter(comp => comp.id !== companyId);
-        
-        if (!state.hasHadFirstCompanyPurchase) {
-            state.hasHadFirstCompanyPurchase = true;
-            messages.push(msg('alert', 'BREAKING', `${c.name} bought out by new private equity sensation`, { cash: -totalCost }));
-        } else {
-            messages.push(msg('cash_loss', 'ACQUIRED', `Bought ${c.name} for ${formatMoney(totalCost)} (equity ${formatMoney(equityVal)} + fee).`, { cash: -totalCost }));
-        }
-
-        return { messages };
-    }
-
     function buyCompanyLeveraged(companyId) {
         const messages = [];
         const c = state.companies.find(comp => comp.id === companyId);
@@ -694,7 +663,6 @@ export function createEngine() {
         getState,
         borrowCash,
         repayDebt,
-        buyCompanyCash,
         buyCompanyLeveraged,
         travelTo,
         resolveUpgrade,

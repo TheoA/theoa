@@ -281,8 +281,22 @@
         .company-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: stretch;
+            gap: 20px;
             margin-bottom: 6px;
+        }
+
+        .company-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .company-name-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            font-size: 15px;
         }
 
         .company-name {
@@ -332,12 +346,6 @@
             color: var(--danger);
         }
 
-        .btn-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
         .btn {
             position: relative;
             display: flex;
@@ -349,6 +357,8 @@
             font-family: var(--font-stack);
             cursor: pointer;
             overflow: hidden;
+            align-self: center;
+            min-width: 130px;
         }
 
         .btn::before {
@@ -360,8 +370,7 @@
             width: 3px;
         }
 
-        .btn-cash::before { background: var(--success); }
-        .btn-lev::before { background: var(--accent2); }
+        .btn-lbo::before { background: var(--accent2); }
 
         .btn-action {
             font-size: 9px;
@@ -377,8 +386,7 @@
             line-height: 1.1;
         }
 
-        .btn-cash .btn-price { color: var(--success); }
-        .btn-lev .btn-price { color: var(--accent2); }
+        .btn-lbo .btn-price { color: var(--accent2); }
 
         .btn-debt {
             font-size: 10px;

@@ -89,30 +89,14 @@ const assert = (condition, message) => {
     const netWorth = parseMoney(netWorthText);
     assert(netWorth === cash - debt, `Net worth display: ${netWorthText}`);
 
-    console.log('\n=== Test 2: Cash Purchase ===');
-    const firstCompany = page.locator('.company-panel').first();
-    const cashPriceText = await firstCompany.locator('.btn-cash .btn-price').innerText();
-    const cashPrice = parseMoney(cashPriceText);
-    console.log(`  Purchase price: ${cashPriceText} (${cashPrice})`);
-
-    const cashBeforePurchase = cash;
-    await firstCompany.locator('.btn-cash').click();
-
-    const cashAfterPurchaseText = await page.locator('#cash-display').innerText();
-    const cashAfterPurchase = parseMoney(cashAfterPurchaseText);
-    assert(cashAfterPurchase < cashBeforePurchase, `Cash decreased after purchase: ${cashAfterPurchaseText}`);
-
-    const portfolioItems = await page.locator('#portfolio-list .list-item').count();
-    assert(portfolioItems === 1, `Company appears in portfolio: ${portfolioItems} owned`);
-
-    console.log('\n=== Test 3: Leveraged Purchase ===');
+    console.log('\n=== Test 2: Leveraged Purchase ===');
     const acquisitions = page.locator('.company-panel');
     const availableCount = await acquisitions.count();
     if (availableCount > 0) {
         const levCompany = acquisitions.first();
-        const levDownText = await levCompany.locator('.btn-lev .btn-price').innerText();
+        const levDownText = await levCompany.locator('.btn-lbo .btn-price').innerText();
         const levDown = parseMoney(levDownText);
-        const levDebtText = await levCompany.locator('.btn-lev .btn-debt').innerText();
+        const levDebtText = await levCompany.locator('.btn-lbo .btn-debt').innerText();
 
         console.log(`  Available companies: ${availableCount}`);
         console.log(`  Down payment: ${levDownText}, Company debt: ${levDebtText}`);
@@ -121,7 +105,7 @@ const assert = (condition, message) => {
         const netWorthBeforeLev = parseMoney(await page.locator('#net-worth-display').innerText());
 
         console.log(`  Cash before: $${cashBeforeLev}`);
-        await levCompany.locator('.btn-lev').click();
+        await levCompany.locator('.btn-lbo').click();
         await page.waitForTimeout(500);
 
         const cashAfterLevText = await page.locator('#cash-display').innerText();
@@ -138,7 +122,7 @@ const assert = (condition, message) => {
         console.log('  ⚠ No companies available for leveraged purchase (all bought)');
     }
 
-    console.log('\n=== Test 4: Travel Advances Turn ===');
+    console.log('\n=== Test 3: Travel Advances Turn ===');
     const turnBeforeText = await page.locator('#turn-display').innerText();
     const turnBefore = parseInt(turnBeforeText.match(/\d+/)[0]);
     console.log(`  Turn before travel: ${turnBefore}`);

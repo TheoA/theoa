@@ -457,25 +457,17 @@ function updateUI() {
             acquisitionsContainer.innerHTML += `
                 <div class="company-panel">
                     <div class="company-header">
-                        <div>
-                            <div class="company-name">${c.name}</div>
+                        <div class="company-info">
+                            <div class="company-name-row">${c.name} <span class="viability ${engine.getViabilityRatingClass(c.viability)}">${engine.getViabilityRating(c.viability)}</span></div>
                             <div class="company-ticker">${c.description}</div>
+                            <div class="metrics">
+                                EV ${engine.formatMoney(c.valuation)} · Debt ${engine.formatMoney(c.debt)} · Assets ${engine.formatMoney(c.assets)} · <span class="${profitClass}">${c.profit < 0 ? '' : '+'}${engine.formatMoney(c.profit)}/turn</span>
+                            </div>
                         </div>
-                        <div class="viability ${engine.getViabilityRatingClass(c.viability)}">${engine.getViabilityRating(c.viability)}</div>
-                    </div>
-                    <div class="metrics">
-                        EV ${engine.formatMoney(c.valuation)} · Debt ${engine.formatMoney(c.debt)} · Assets ${engine.formatMoney(c.assets)} · <span class="${profitClass}">${c.profit < 0 ? '' : '+'}${engine.formatMoney(c.profit)}/turn</span>
-                    </div>
-                    <div class="btn-row">
-                        <button class="btn btn-cash" onclick="buyCompanyCash('${c.id}')">
-                            <span class="btn-action">BUY CASH</span>
-                            <span class="btn-price">${engine.formatMoney(acqCost)}</span>
-                            <span class="btn-note">full price</span>
-                        </button>
-                        <button class="btn btn-lev" onclick="buyCompanyLeveraged('${c.id}')">
-                            <span class="btn-action">BUY LEVERAGED</span>
+                        <button class="btn btn-lbo" onclick="buyCompanyLeveraged('${c.id}')">
+                            <span class="btn-action">BUY LBO</span>
                             <span class="btn-price">${engine.formatMoney(leveragedDown)}</span>
-                            <span class="btn-debt">+ ${engine.formatMoney(leveragedDebt)} debt</span>
+                            <span class="btn-debt">COMPANY DEBT ${engine.formatMoney(leveragedDebt)}</span>
                         </button>
                     </div>
                 </div>
@@ -515,15 +507,6 @@ window.closeCompanyModal = function() {
     playBeep('click');
     document.getElementById('company-modal').classList.remove('active');
     selectedCompanyId = null;
-};
-
-window.buyCompanyCash = function(companyId) {
-    playBeep('click');
-    const result = engine.buyCompanyCash(companyId);
-    result.messages.forEach(m => {
-        showSimpleEventAlert(m.title, m.text, m.type);
-    });
-    updateUI();
 };
 
 window.buyCompanyLeveraged = function(companyId) {
