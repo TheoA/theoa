@@ -358,10 +358,8 @@ function updateUI() {
     nwDisplay.innerText = engine.formatMoney(nw);
     nwDisplay.style.color = nw < 0 ? 'var(--bb-red)' : '#fff';
 
-    document.getElementById('location-display').innerText = state.location;
-
-    document.getElementById('heat-fill').style.width = `${state.heat}%`;
-    document.getElementById('heat-text').innerText = `${state.heat}%`;
+    const luigiCount = Math.floor(state.heat / 10);
+    document.getElementById('heat-text').innerText = `Heat ${luigiCount} Luigi's`;
 
     const rate = state.upgrades.hasShellCorp ? "5.0%" : "10.0%";
     document.getElementById('interest-rate-text').innerText = `${rate} / turn`;
@@ -414,7 +412,7 @@ function updateUI() {
     const owned = state.companies.filter(c => c.isOwned);
 
     if (owned.length === 0) {
-        portfolioContainer.innerHTML = '<p style="text-align: center; color: var(--muted); padding-top: 40px;">No companies currently in portfolio.<br>Spend cash on Available Targets to execute leveraged buyouts.</p>';
+        portfolioContainer.innerHTML = '<p style="text-align: center; color: var(--muted); padding-top: 10px;">Buy companies to manage portfolio, change locations to advance date</p>';
     } else {
         owned.forEach(c => {
             const strikeLabel = (state.strikeTurns[c.id] && state.strikeTurns[c.id] > 0)
