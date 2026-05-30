@@ -415,26 +415,27 @@ function updateUI() {
         portfolioContainer.innerHTML = '<p style="text-align: center; color: var(--muted); padding-top: 40px;">No companies currently in portfolio.<br>Spend cash on Available Targets to execute leveraged buyouts.</p>';
     } else {
         owned.forEach(c => {
-            const item = document.createElement('div');
-            item.className = 'list-item';
-
             const strikeLabel = (state.strikeTurns[c.id] && state.strikeTurns[c.id] > 0)
                 ? ` <span class="red-highlight">[STRIKE: ${state.strikeTurns[c.id]}t]</span>`
                 : '';
+            const profitClass = c.profit < 0 ? 'neg' : '';
 
-            item.innerHTML = `
-                <div class="list-item-details">
-                    <span class="company-name" onclick="openCompanyModal('${c.id}')">${c.name}</span>${strikeLabel}
-                    <div class="company-stats">
-                        Valuation: ${engine.formatMoney(c.valuation)} | Company Debt: ${engine.formatMoney(c.debt)} | Viability: ${engine.getViabilityRating(c.viability)}
-                        <br>Flow: <span style="color: ${c.profit < 0 ? 'var(--bb-red)' : 'var(--bb-green)'}">${c.profit < 0 ? '' : '+'}${engine.formatMoney(c.profit)}/turn</span> | Strip Assets: ${engine.formatMoney(c.assets)}
+            portfolioContainer.innerHTML += `
+                <div class="company-panel">
+                    <div class="company-header">
+                        <div class="company-info">
+                            <div class="company-name-row">${c.name}${strikeLabel} <span class="viability ${engine.getViabilityRatingClass(c.viability)}">${engine.getViabilityRating(c.viability)}</span></div>
+                            <div class="company-ticker">${c.description}</div>
+                            <div class="metrics">
+                                EV ${engine.formatMoney(c.valuation)} · Debt ${engine.formatMoney(c.debt)} · Assets ${engine.formatMoney(c.assets)} · <span class="${profitClass}">${c.profit < 0 ? '' : '+'}${engine.formatMoney(c.profit)}/turn</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-manage" onclick="openCompanyModal('${c.id}')">
+                            <span class="btn-action">MANAGE</span>
+                        </button>
                     </div>
                 </div>
-                <div class="list-item-action">
-                    <button onclick="openCompanyModal('${c.id}')">[MANAGE]</button>
-                </div>
             `;
-            portfolioContainer.appendChild(item);
         });
     }
 

@@ -371,6 +371,7 @@
         }
 
         .btn-lbo::before { background: var(--accent2); }
+        .btn-manage::before { display: none; }
 
         .btn-action {
             font-size: 9px;
@@ -408,8 +409,8 @@
         }
 
         .travel-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            display: flex;
+            overflow-x: auto;
             gap: 4px;
         }
 
@@ -636,6 +637,16 @@
 
             <!-- DASHBOARD -->
             <div class="dashboard">
+                <!-- TRAVEL -->
+                <div class="panel">
+                    <div class="panel-header">Travel</div>
+                    <div class="panel-content">
+                        <div class="travel-group" id="travel-buttons">
+                            <!-- Dynamic buttons -->
+                        </div>
+                    </div>
+                </div>
+
                 <!-- PORTFOLIO -->
                 <div class="panel">
                     <div class="panel-header">Portfolio</div>
@@ -653,7 +664,7 @@
                 </div>
             </div>
 
-            <!-- FINANCE & TRAVEL -->
+            <!-- FINANCE -->
             <div class="finance-panel">
                 <div class="panel">
                     <div class="panel-header">Loans</div>
@@ -665,15 +676,6 @@
                         <div class="button-group">
                             <button id="btn-borrow" onclick="borrowCash()">Borrow $1M</button>
                             <button id="btn-repay" onclick="repayDebt()">Repay $1M</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-header">Travel</div>
-                    <div class="panel-content">
-                        <div class="travel-group" id="travel-buttons">
-                            <!-- Dynamic buttons -->
                         </div>
                     </div>
                 </div>
