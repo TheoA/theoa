@@ -3,7 +3,34 @@ import { locations } from './data/locations.js';
 import { upgradeItems } from './data/upgrades.js';
 import { config } from './data/config.js';
 
-export function createEngine() {
+function createSeededRandom(seed) {
+    let s = seed;
+    return function() {
+        s = Math.imul(1664525, s) + 1013904223 >>> 0;
+        return s / 0x100000000;
+    };
+}
+
+let random = Math.random;
+let currentSeed = null;
+
+export function setRandomSeed(seed) {
+    currentSeed = seed;
+    random = createSeededRandom(seed);
+}
+
+export function getCurrentSeed() {
+    return currentSeed;
+}
+
+export function createEngine(options = {}) {
+    if (options.seed !== undefined) {
+        setRandomSeed(options.seed);
+    } else {
+        random = Math.random;
+        currentSeed = null;
+    }
+
     let state = createInitialState();
 
     function createInitialState() {
@@ -92,7 +119,7 @@ export function createEngine() {
 
     function refreshLocalAcquisitions() {
         const pool = state.companies.filter(c => !c.isOwned && !c.isBankrupt && !c.isSold);
-        pool.sort(() => Math.random() - 0.5);
+        pool.sort(() => random() - 0.5);
 
         const loc = locations.find(l => l.name === state.location);
         let mult = loc ? loc.multiplier : 1.0;
@@ -109,9 +136,9 @@ export function createEngine() {
         selected.forEach(c => {
             let localMult = mult;
             if (state.location === 'Silicon Valley') {
-                localMult += (Math.random() * config.svVolatilityRange * 2 - config.svVolatilityRange);
+                localMult += (random() * config.svVolatilityRange * 2 - config.svVolatilityRange);
             } else {
-                localMult += (Math.random() * config.defaultVolatilityRange * 2 - config.defaultVolatilityRange);
+                localMult += (random() * config.defaultVolatilityRange * 2 - config.defaultVolatilityRange);
             }
 
             if (state.marketCrashTurns > 0) {
@@ -229,11 +256,11 @@ export function createEngine() {
     }
 
     function rollBadEvent() {
-        let roll = Math.floor(Math.random() * 5);
+        let roll = Math.floor(random() * 5);
 
-        if (roll === 2 && Math.random() >= config.luigiSuppressChance) {
+        if (roll === 2 && random() >= config.luigiSuppressChance) {
             const otherRolls = [0, 1, 3, 4];
-            roll = otherRolls[Math.floor(Math.random() * otherRolls.length)];
+            roll = otherRolls[Math.floor(random() * otherRolls.length)];
         }
 
         const owned = state.companies.filter(c => c.isOwned);
@@ -243,7 +270,7 @@ export function createEngine() {
             return { type: 'choice', eventId: 'sec_audit' };
         } else if (roll === 1) {
             if (owned.length === 0) return null;
-            return { type: 'choice', eventId: 'union_strike', targetCompanyId: owned[Math.floor(Math.random() * owned.length)].id };
+            return { type: 'choice', eventId: 'union_strike', targetCompanyId: owned[Math.floor(random() * owned.length)].id };
         } else if (roll === 2) {
             return { type: 'choice', eventId: 'assassination' };
         } else if (roll === 3) {
@@ -257,32 +284,32 @@ export function createEngine() {
         const messages = [];
 
         if (eventId === 'sec_audit') {
-            if (state.upgrades.hasJusticeFriend) {
-                messages.push(msg('info', 'SEC CLOSED', 'Your funded Supreme Court Justice "friend" placed an informal call. Investigation quietly dismissed.'));
-                return { messages };
-            }
+if (state.upgrades.hasJusticeFriend) {
+            messages.push(msg('info', 'SEC CLOSED', 'Your funded Supreme Court Justice "friend" placed an informal call. Investigation quietly dismissed.'));
+            return { messages };
+        }
 
-            if (choice === 'pay') {
-                if (state.cash >= config.secSettlementCost) {
-                    state.cash -= config.secSettlementCost;
-                    state.heat = 10;
-                    messages.push(msg('cash_loss', 'SETTLEMENT PAID', `Paid ${formatMoney(config.secSettlementCost)} to bury SEC charges. Heat reduced to 10%.`, { cash: -config.secSettlementCost, heat: -60 }));
-                } else {
-                    const go = triggerSECArrest();
-                    return { messages, gameOver: go };
-                }
+        if (choice === 'pay') {
+            if (state.cash >= config.secSettlementCost) {
+                state.cash -= config.secSettlementCost;
+                state.heat = 10;
+                messages.push(msg('cash_loss', 'SETTLEMENT PAID', `Paid ${formatMoney(config.secSettlementCost)} to bury SEC charges. Heat reduced to 10%.`, { cash: -config.secSettlementCost, heat: -60 }));
             } else {
-                if (state.cash >= config.secLawyerCost) {
-                    state.cash -= config.secLawyerCost;
-                    state.heat = Math.min(100, state.heat + 30);
-                    messages.push(msg('cash_loss', 'COURT BATTLE', `Paid ${formatMoney(config.secLawyerCost)} in legal fees. Heat +30%.`, { cash: -config.secLawyerCost, heat: +30 }));
-                } else {
-                    const go = triggerSECArrest();
-                    return { messages, gameOver: go };
-                }
+                const go = triggerSECArrest();
+                return { messages, gameOver: go };
             }
-        } else if (eventId === 'union_strike') {
-            const targetComp = state.companies.find(c => c.id === pendingCompanyId) || owned[Math.floor(Math.random() * owned.length)];
+        } else {
+            if (state.cash >= config.secLawyerCost) {
+                state.cash -= config.secLawyerCost;
+                state.heat = Math.min(100, state.heat + 30);
+                messages.push(msg('cash_loss', 'COURT BATTLE', `Paid ${formatMoney(config.secLawyerCost)} in legal fees. Heat +30%.`, { cash: -config.secLawyerCost, heat: +30 }));
+            } else {
+                const go = triggerSECArrest();
+                return { messages, gameOver: go };
+            }
+        }
+    } else if (eventId === 'union_strike') {
+        const targetComp = state.companies.find(c => c.id === pendingCompanyId) || owned[Math.floor(random() * owned.length)];
             targetComp.valuation = Math.round(targetComp.valuation * config.unionBusterValuationMultiplier);
             state.strikeTurns[targetComp.id] = config.unionBusterStrikeTurns;
             state.heat = Math.min(100, state.heat + config.unionBusterHeatGain);
@@ -468,7 +495,7 @@ export function createEngine() {
         }
 
         // Event roll
-        const roll = Math.random() * config.eventRollBase;
+        const roll = random() * config.eventRollBase;
         const multiplier = (state.location === 'Delaware') ? 0.25 : 1.0;
         const eventThreshold = state.heat * multiplier;
 
@@ -480,10 +507,10 @@ export function createEngine() {
         }
 
         // Upgrade roll
-        if (Math.random() < config.upgradeChance) {
+        if (random() < config.upgradeChance) {
             const available = upgradeItems.filter(u => !state.upgrades[u.id]);
             if (available.length > 0) {
-                const item = available[Math.floor(Math.random() * available.length)];
+                const item = available[Math.floor(random() * available.length)];
                 state.synergies.triggeredThisTurn = item.id;
                 return { messages, pendingUpgrade: item };
             }
@@ -603,6 +630,7 @@ export function createEngine() {
 
         c.profit += config.cutSavings;
         c.viability = Math.max(0, c.viability - config.cutViabilityHit);
+        c.isCostCut = true;
 
         const heatGain = applyHeatGain(config.cutHeatGain);
         state.heat = Math.min(100, state.heat + heatGain);
@@ -671,7 +699,7 @@ export function createEngine() {
         messages.push(msg('alert', 'CHAPTER 11', `Voided ${c.name} via bankruptcy loophole. Heat +${heatGain}%.`, { heat: +heatGain }));
 
         // High heat immediate risk check
-        if (state.heat > 75 && Math.random() < 0.50) {
+        if (state.heat > 75 && random() < 0.50) {
             const pendingEvent = rollBadEvent();
             if (pendingEvent) {
                 return { messages, pendingEvent };
